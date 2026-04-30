@@ -4,22 +4,20 @@ import type { Restaurant } from "@/data/restaurants";
 import { cn } from "@/lib/utils";
 
 const toneMap: Record<Restaurant["tone"], string> = {
-  green: "bg-accent/30",
-  yellow: "bg-highlight/40",
+  green: "bg-accent",
+  yellow: "bg-highlight",
   beige: "bg-muted",
-  orange: "bg-primary/15",
+  orange: "bg-info",
 };
 
-export const RestaurantCard = ({ r, featured = false }: { r: Restaurant; featured?: boolean }) => {
+export const RestaurantCard = ({ r }: { r: Restaurant }) => {
   return (
     <Link
       to={`/restaurant/${r.id}`}
-      className={cn(
-        "block soft-card overflow-hidden press animate-fade-in",
-        toneMap[r.tone]
-      )}
+      className="block press animate-fade-in"
     >
-      <div className="relative h-44 w-full overflow-hidden">
+      {/* Image with rounded corners, Cherrypick-style */}
+      <div className="relative h-56 w-full overflow-hidden rounded-[1.75rem] shadow-card">
         <img
           src={r.image}
           alt={`${r.name} — ${r.cuisine}`}
@@ -28,21 +26,33 @@ export const RestaurantCard = ({ r, featured = false }: { r: Restaurant; feature
           height={512}
           className="h-full w-full object-cover"
         />
-        <span className="absolute top-3 left-3 bg-secondary text-secondary-foreground text-xs font-semibold px-3 py-1 rounded-full">
+        <span className={cn("absolute top-3 left-3 text-secondary text-xs font-bold px-3 py-1.5 rounded-full", toneMap[r.tone])}>
           {r.tag}
         </span>
-        <span className="absolute top-3 right-3 bg-background/90 text-foreground text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+        <span className="absolute top-3 right-3 bg-card text-secondary text-xs font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1 shadow-soft">
           <Star size={12} className="fill-primary text-primary" /> {r.rating}
         </span>
+
+        {/* Little logo badge bottom-left (like Cherrypick "By Cherrypick") */}
+        <div className="absolute -bottom-3 left-4 w-10 h-10 rounded-full bg-info flex items-center justify-center border-4 border-background">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <circle cx="9" cy="13" r="4" fill="hsl(var(--accent))" stroke="hsl(var(--secondary))" strokeWidth="2" />
+            <path d="M7 13 Q9 15 11 13" stroke="hsl(var(--secondary))" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          </svg>
+        </div>
       </div>
-      <div className="p-4 space-y-3">
+
+      {/* Info */}
+      <div className="pt-4 px-1">
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <h3 className="font-display text-xl font-semibold leading-tight">{r.name}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{r.cuisine} · {r.address}</p>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-display text-xl font-bold text-secondary leading-tight truncate">{r.name}</h3>
+            <p className="text-xs text-secondary/70 mt-0.5">{r.cuisine} · {r.address}</p>
           </div>
         </div>
-        <div className="grid grid-cols-5 gap-1.5">
+
+        {/* Data pills — always visible */}
+        <div className="mt-3 grid grid-cols-5 gap-1.5">
           <DataPill icon={Footprints} label={r.walk} />
           <DataPill icon={Clock} label={r.wait} />
           <DataPill icon={Headphones} label={r.ambiance} />
@@ -55,8 +65,8 @@ export const RestaurantCard = ({ r, featured = false }: { r: Restaurant; feature
 };
 
 const DataPill = ({ icon: Icon, label, compact }: { icon: any; label: string; compact?: boolean }) => (
-  <div className="flex flex-col items-center gap-0.5 rounded-2xl bg-background/70 py-1.5 px-1">
-    <Icon size={14} className="text-secondary" />
-    <span className={cn("text-[10px] font-semibold text-foreground/80 text-center leading-tight", compact && "text-[9px]")}>{label}</span>
+  <div className="flex flex-col items-center gap-0.5 rounded-2xl bg-card py-2 px-1 shadow-soft">
+    <Icon size={14} className="text-primary" strokeWidth={2.4} />
+    <span className={cn("font-bold text-secondary text-center leading-tight", compact ? "text-[9px]" : "text-[10px]")}>{label}</span>
   </div>
 );
