@@ -2,95 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Spoty Design System — soft, premium, Cherrypick-inspired */
+/* Spoty Design System — Cherrypick-inspired
+   Soft pink-cream canvas · dark forest green display · magenta primary · lime highlight */
 
 @layer base {
   :root {
-    /* Brand palette in HSL */
-    --background: 46 48% 92%;           /* #F4F1DE */
-    --foreground: 232 21% 30%;          /* #3D405B */
+    /* Canvas */
+    --background: 18 65% 96%;            /* soft pink-cream #FBEEE7 feel */
+    --foreground: 155 55% 14%;           /* deep forest green */
 
-    --card: 46 52% 95%;
-    --card-foreground: 232 21% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 155 55% 14%;
 
-    --popover: 46 52% 96%;
-    --popover-foreground: 232 21% 30%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 155 55% 14%;
 
-    --primary: 13 66% 63%;              /* #E07A5F warm orange */
-    --primary-foreground: 46 48% 96%;
-    --primary-glow: 13 80% 72%;
+    /* Brand */
+    --primary: 330 70% 40%;              /* magenta/berry CTA */
+    --primary-foreground: 18 65% 97%;
+    --primary-glow: 330 75% 55%;
 
-    --secondary: 232 21% 30%;           /* #3D405B dark */
-    --secondary-foreground: 46 48% 96%;
+    --secondary: 155 55% 14%;            /* dark green */
+    --secondary-foreground: 18 65% 97%;
 
-    --muted: 46 40% 88%;
-    --muted-foreground: 232 15% 45%;
+    /* Neutral surfaces */
+    --muted: 18 50% 92%;
+    --muted-foreground: 155 15% 35%;
 
-    --accent: 147 24% 60%;              /* #81B29A green */
-    --accent-foreground: 232 21% 20%;
+    /* Accents */
+    --accent: 78 75% 70%;                /* lime/chartreuse for banners */
+    --accent-foreground: 155 55% 14%;
 
-    --highlight: 38 77% 76%;            /* #F2CC8F yellow */
-    --highlight-foreground: 232 21% 25%;
+    --info: 205 75% 88%;                 /* soft sky blue card */
+    --info-foreground: 155 55% 14%;
 
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 46 48% 96%;
+    --highlight: 38 85% 78%;              /* warm yellow */
+    --highlight-foreground: 155 55% 14%;
 
-    --border: 38 30% 82%;
-    --input: 38 35% 86%;
-    --ring: 13 66% 63%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 18 65% 97%;
 
-    --radius: 1.5rem;
+    --border: 18 40% 88%;
+    --input: 18 40% 90%;
+    --ring: 330 70% 40%;
 
-    /* Gradients */
-    --gradient-warm: linear-gradient(135deg, hsl(13 66% 63%), hsl(38 77% 76%));
-    --gradient-calm: linear-gradient(135deg, hsl(147 24% 60%), hsl(46 48% 92%));
-    --gradient-hero: linear-gradient(180deg, hsl(46 48% 94%), hsl(46 48% 88%));
+    --radius: 1.75rem;
 
-    /* Shadows — soft */
-    --shadow-soft: 0 4px 20px -8px hsl(232 21% 30% / 0.15);
-    --shadow-card: 0 8px 30px -12px hsl(232 21% 30% / 0.18);
-    --shadow-glow: 0 10px 40px -10px hsl(13 66% 63% / 0.45);
+    --gradient-hero: linear-gradient(180deg, hsl(18 65% 96%), hsl(18 65% 94%));
+    --gradient-warm: linear-gradient(135deg, hsl(330 70% 40%), hsl(330 75% 55%));
+
+    --shadow-soft: 0 4px 18px -8px hsl(155 55% 14% / 0.12);
+    --shadow-card: 0 10px 30px -14px hsl(155 55% 14% / 0.18);
+    --shadow-glow: 0 12px 40px -12px hsl(330 70% 40% / 0.45);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 46 48% 92%;
-    --sidebar-foreground: 232 21% 30%;
-    --sidebar-primary: 13 66% 63%;
-    --sidebar-primary-foreground: 46 48% 96%;
-    --sidebar-accent: 147 24% 60%;
-    --sidebar-accent-foreground: 232 21% 20%;
-    --sidebar-border: 38 30% 82%;
-    --sidebar-ring: 13 66% 63%;
+    --sidebar-background: 18 65% 96%;
+    --sidebar-foreground: 155 55% 14%;
+    --sidebar-primary: 330 70% 40%;
+    --sidebar-primary-foreground: 18 65% 97%;
+    --sidebar-accent: 78 75% 70%;
+    --sidebar-accent-foreground: 155 55% 14%;
+    --sidebar-border: 18 40% 88%;
+    --sidebar-ring: 330 70% 40%;
   }
 
   .dark {
-    --background: 232 21% 12%;
-    --foreground: 46 48% 92%;
-    --card: 232 21% 16%;
-    --card-foreground: 46 48% 92%;
-    --popover: 232 21% 16%;
-    --popover-foreground: 46 48% 92%;
-    --primary: 13 66% 63%;
-    --primary-foreground: 232 21% 12%;
-    --secondary: 46 48% 92%;
-    --secondary-foreground: 232 21% 12%;
-    --muted: 232 15% 22%;
-    --muted-foreground: 46 20% 70%;
-    --accent: 147 24% 60%;
-    --accent-foreground: 232 21% 12%;
-    --border: 232 15% 22%;
-    --input: 232 15% 22%;
-    --ring: 13 66% 63%;
+    --background: 155 40% 8%;
+    --foreground: 18 65% 96%;
+    --card: 155 35% 12%;
+    --card-foreground: 18 65% 96%;
+    --popover: 155 35% 12%;
+    --popover-foreground: 18 65% 96%;
+    --primary: 330 70% 55%;
+    --primary-foreground: 155 40% 8%;
+    --secondary: 18 65% 96%;
+    --secondary-foreground: 155 40% 8%;
+    --muted: 155 25% 18%;
+    --muted-foreground: 18 30% 75%;
+    --accent: 78 60% 55%;
+    --accent-foreground: 155 40% 8%;
+    --border: 155 25% 18%;
+    --input: 155 25% 18%;
+    --ring: 330 70% 55%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  html, body, #root {
-    @apply h-full;
-  }
+  * { @apply border-border; }
+  html, body, #root { @apply h-full; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "ss01", "cv11";
@@ -105,13 +105,13 @@
     @apply rounded-[2rem] bg-card shadow-[var(--shadow-card)];
   }
   .chip {
-    @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-border bg-card/60 transition-[var(--transition-smooth)] cursor-pointer select-none;
+    @apply inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-semibold border-2 border-primary/80 text-primary bg-transparent transition-[var(--transition-smooth)] cursor-pointer select-none;
   }
   .chip-active {
-    @apply bg-secondary text-secondary-foreground border-secondary;
+    @apply bg-primary text-primary-foreground border-primary;
   }
-  .data-pill {
-    @apply inline-flex items-center gap-1 text-xs font-medium text-foreground/80;
+  .pill-btn {
+    @apply inline-flex items-center justify-center h-14 rounded-full font-semibold text-base transition-[var(--transition-smooth)] press;
   }
 }
 
@@ -120,6 +120,8 @@
   .animate-scale-in { animation: scale-in 0.3s ease-out both; }
   .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.4,0,0.2,1) both; }
   .press { @apply active:scale-[0.97] transition-transform; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
 
   @keyframes fade-in {
     from { opacity: 0; transform: translateY(8px); }
