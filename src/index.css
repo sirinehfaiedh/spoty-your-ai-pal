@@ -2,95 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Spoty Design System — soft, premium, Cherrypick-inspired */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Brand palette in HSL */
+    --background: 46 48% 92%;           /* #F4F1DE */
+    --foreground: 232 21% 30%;          /* #3D405B */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 46 52% 95%;
+    --card-foreground: 232 21% 30%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 46 52% 96%;
+    --popover-foreground: 232 21% 30%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 13 66% 63%;              /* #E07A5F warm orange */
+    --primary-foreground: 46 48% 96%;
+    --primary-glow: 13 80% 72%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 232 21% 30%;           /* #3D405B dark */
+    --secondary-foreground: 46 48% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 46 40% 88%;
+    --muted-foreground: 232 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 147 24% 60%;              /* #81B29A green */
+    --accent-foreground: 232 21% 20%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --highlight: 38 77% 76%;            /* #F2CC8F yellow */
+    --highlight-foreground: 232 21% 25%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 46 48% 96%;
 
-    --radius: 0.5rem;
+    --border: 38 30% 82%;
+    --input: 38 35% 86%;
+    --ring: 13 66% 63%;
 
-    --sidebar-background: 0 0% 98%;
+    --radius: 1.5rem;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Gradients */
+    --gradient-warm: linear-gradient(135deg, hsl(13 66% 63%), hsl(38 77% 76%));
+    --gradient-calm: linear-gradient(135deg, hsl(147 24% 60%), hsl(46 48% 92%));
+    --gradient-hero: linear-gradient(180deg, hsl(46 48% 94%), hsl(46 48% 88%));
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Shadows — soft */
+    --shadow-soft: 0 4px 20px -8px hsl(232 21% 30% / 0.15);
+    --shadow-card: 0 8px 30px -12px hsl(232 21% 30% / 0.18);
+    --shadow-glow: 0 10px 40px -10px hsl(13 66% 63% / 0.45);
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 46 48% 92%;
+    --sidebar-foreground: 232 21% 30%;
+    --sidebar-primary: 13 66% 63%;
+    --sidebar-primary-foreground: 46 48% 96%;
+    --sidebar-accent: 147 24% 60%;
+    --sidebar-accent-foreground: 232 21% 20%;
+    --sidebar-border: 38 30% 82%;
+    --sidebar-ring: 13 66% 63%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 232 21% 12%;
+    --foreground: 46 48% 92%;
+    --card: 232 21% 16%;
+    --card-foreground: 46 48% 92%;
+    --popover: 232 21% 16%;
+    --popover-foreground: 46 48% 92%;
+    --primary: 13 66% 63%;
+    --primary-foreground: 232 21% 12%;
+    --secondary: 46 48% 92%;
+    --secondary-foreground: 232 21% 12%;
+    --muted: 232 15% 22%;
+    --muted-foreground: 46 20% 70%;
+    --accent: 147 24% 60%;
+    --accent-foreground: 232 21% 12%;
+    --border: 232 15% 22%;
+    --input: 232 15% 22%;
+    --ring: 13 66% 63%;
   }
 }
 
@@ -98,8 +88,54 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
-  body {
-    @apply bg-background text-foreground;
+  html, body, #root {
+    @apply h-full;
   }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+}
+
+@layer components {
+  .phone-frame {
+    @apply relative mx-auto w-full max-w-[430px] min-h-screen bg-background overflow-hidden;
+  }
+  .soft-card {
+    @apply rounded-[2rem] bg-card shadow-[var(--shadow-card)];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-border bg-card/60 transition-[var(--transition-smooth)] cursor-pointer select-none;
+  }
+  .chip-active {
+    @apply bg-secondary text-secondary-foreground border-secondary;
+  }
+  .data-pill {
+    @apply inline-flex items-center gap-1 text-xs font-medium text-foreground/80;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in { animation: fade-in 0.5s ease-out both; }
+  .animate-scale-in { animation: scale-in 0.3s ease-out both; }
+  .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+  .press { @apply active:scale-[0.97] transition-transform; }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .animate-pulse-ring { animation: pulse-ring 1.6s cubic-bezier(0.4,0,0.2,1) infinite; }
 }
