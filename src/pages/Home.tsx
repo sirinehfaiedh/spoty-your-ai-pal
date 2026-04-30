@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mic, Sparkles, Bell } from "lucide-react";
+import { Mic, Search, Bookmark, UserRound } from "lucide-react";
 import { restaurants } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
@@ -9,33 +9,39 @@ const Home = () => {
   return (
     <div className="phone-frame flex flex-col pb-2">
       {/* Header */}
-      <header className="px-6 pt-8 pb-4 flex items-start justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">Good afternoon,</p>
-          <h1 className="font-display text-3xl font-semibold leading-tight">Sirine 👋</h1>
-        </div>
-        <Link to="/profile" className="w-11 h-11 rounded-full bg-highlight flex items-center justify-center press shadow-soft relative">
-          <Bell size={18} className="text-secondary" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
-        </Link>
+      <header className="px-6 pt-8 pb-3">
+        <h1 className="font-display text-[40px] leading-[1.05] font-bold text-secondary">Plan it</h1>
+        <p className="text-secondary/75 mt-1 text-base">Let's get those tastebuds tingling</p>
+        <div className="mt-5 h-px bg-border" />
       </header>
 
-      {/* AI insight */}
-      <section className="mx-6 soft-card p-5 bg-gradient-warm text-primary-foreground animate-slide-up">
-        <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase opacity-90">
-          <Sparkles size={14} /> Spoty AI
-        </div>
-        <p className="mt-2 font-display text-xl leading-snug">
-          You usually eat at <b>12:00</b> — here are fast options nearby.
-        </p>
-      </section>
+      {/* Quick actions */}
+      <div className="px-6 flex gap-3 overflow-x-auto no-scrollbar">
+        <QuickChip icon={Search} label="Search" />
+        <QuickChip icon={Bookmark} label="Saved" />
+        <QuickChip icon={UserRound} label="For you" />
+      </div>
 
-      {/* Suggestions */}
-      <section className="mt-7 px-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-2xl font-semibold">Today's picks</h2>
-          <Link to="/explore" className="text-sm font-semibold text-primary">See all</Link>
+      {/* Lime banner */}
+      <div className="mx-6 mt-5 rounded-[1.75rem] bg-accent p-5 animate-slide-up">
+        <h3 className="font-display text-xl font-bold text-secondary">Good afternoon, Sirine</h3>
+        <p className="text-secondary/80 text-sm mt-1">
+          You usually eat at 12:00 — here are 3 fast options nearby.
+        </p>
+      </div>
+
+      {/* Info blue card */}
+      <Link to="/voice" className="mx-6 mt-3 rounded-[1.75rem] bg-info p-5 flex items-center gap-3 press animate-slide-up">
+        <span className="text-secondary">✨</span>
+        <div className="flex-1">
+          <h4 className="font-display text-lg font-bold text-secondary leading-tight">Ask Spoty anything</h4>
+          <p className="text-secondary/80 text-sm">Tap the mic and describe your mood</p>
         </div>
+      </Link>
+
+      {/* Picks */}
+      <section className="mt-7 px-6">
+        <h2 className="font-display text-2xl font-bold text-secondary mb-4">Top picks for you</h2>
         <div className="space-y-4">
           {picks.map((r) => (
             <RestaurantCard key={r.id} r={r} />
@@ -43,7 +49,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Voice CTA floating */}
+      {/* Voice CTA */}
       <Link
         to="/voice"
         className="fixed bottom-28 right-6 sm:right-[calc(50%-215px+1.5rem)] z-20"
@@ -62,5 +68,11 @@ const Home = () => {
     </div>
   );
 };
+
+const QuickChip = ({ icon: Icon, label }: any) => (
+  <button className="chip press whitespace-nowrap">
+    <Icon size={16} strokeWidth={2.5} /> {label}
+  </button>
+);
 
 export default Home;
