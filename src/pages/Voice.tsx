@@ -75,8 +75,11 @@ const Voice = () => {
         )}
       </div>
 
-      <div className="px-6 pb-10 text-center text-xs text-muted-foreground">
-        Tap anywhere to speak again
+      <div className="px-6 pb-10 text-center">
+        <p className="text-xs text-muted-foreground">Tap anywhere to speak again</p>
+        <Link to="/chat" className="inline-block mt-3 text-xs font-bold text-primary underline">
+          Prefer to type? Open AI chat →
+        </Link>
       </div>
     </div>
   );
