@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppStateProvider } from "@/state/AppState";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Forgot from "./pages/Forgot";
@@ -13,6 +14,10 @@ import Saved from "./pages/Saved";
 import Profile from "./pages/Profile";
 import RestaurantDetails from "./pages/RestaurantDetails";
 import Voice from "./pages/Voice";
+import Chat from "./pages/Chat";
+import Meeting from "./pages/Meeting";
+import Lists from "./pages/Lists";
+import GroupVote from "./pages/GroupVote";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,21 +27,27 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot" element={<Forgot />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/saved" element={<Saved />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/restaurant/:id" element={<RestaurantDetails />} />
-          <Route path="/voice" element={<Voice />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppStateProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot" element={<Forgot />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/restaurant/:id" element={<RestaurantDetails />} />
+            <Route path="/voice" element={<Voice />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/meeting/:id" element={<Meeting />} />
+            <Route path="/lists" element={<Lists />} />
+            <Route path="/group-vote" element={<GroupVote />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AppStateProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
