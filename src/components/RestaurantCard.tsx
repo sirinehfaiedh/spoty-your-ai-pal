@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Footprints, Clock, Headphones, Car, Wallet, Star } from "lucide-react";
+import { Footprints, Clock, Headphones, Car, Wallet, Star, Accessibility, Sparkles, Timer } from "lucide-react";
 import type { Restaurant } from "@/data/restaurants";
+import { useApp } from "@/state/AppState";
 import { cn } from "@/lib/utils";
 
 const toneMap: Record<Restaurant["tone"], string> = {
@@ -10,14 +11,14 @@ const toneMap: Record<Restaurant["tone"], string> = {
   orange: "bg-info",
 };
 
-export const RestaurantCard = ({ r }: { r: Restaurant }) => {
+export const RestaurantCard = ({ r, compact = false }: { r: Restaurant; compact?: boolean }) => {
+  const { mode } = useApp();
+  const userHasCar = true; // demo: would come from profile prefs
+
   return (
-    <Link
-      to={`/restaurant/${r.id}`}
-      className="block press animate-fade-in"
-    >
-      {/* Image with rounded corners, Cherrypick-style */}
-      <div className="relative h-56 w-full overflow-hidden rounded-[1.75rem] shadow-card">
+    <Link to={`/restaurant/${r.id}`} className="block press animate-fade-in">
+      {/* Image */}
+      <div className={cn("relative w-full overflow-hidden rounded-[1.75rem] shadow-card", compact ? "h-44" : "h-56")}>
         <img
           src={r.image}
           alt={`${r.name} — ${r.cuisine}`}
@@ -33,12 +34,21 @@ export const RestaurantCard = ({ r }: { r: Restaurant }) => {
           <Star size={12} className="fill-primary text-primary" /> {r.rating}
         </span>
 
-        {/* Little logo badge bottom-left (like Cherrypick "By Cherrypick") */}
-        <div className="absolute -bottom-3 left-4 w-10 h-10 rounded-full bg-info flex items-center justify-center border-4 border-background">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <circle cx="9" cy="13" r="4" fill="hsl(var(--accent))" stroke="hsl(var(--secondary))" strokeWidth="2" />
-            <path d="M7 13 Q9 15 11 13" stroke="hsl(var(--secondary))" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          </svg>
+        {/* Affinity score badge — bottom-right */}
+        <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1 shadow-glow">
+          <Sparkles size={11} /> {r.affinity}% match
+        </div>
+
+        {/* Crowd dot */}
+        <div className="absolute bottom-3 left-3 bg-card/90 backdrop-blur text-secondary text-[10px] font-bold px-2 py-1 rounded-full inline-flex items-center gap-1 shadow-soft">
+          <span className={cn(
+            "w-1.5 h-1.5 rounded-full",
+            r.crowd === "Empty" && "bg-accent",
+            r.crowd === "Calm" && "bg-accent",
+            r.crowd === "Lively" && "bg-highlight",
+            r.crowd === "Packed" && "bg-primary",
+          )} />
+          {r.crowd}
         </div>
       </div>
 
@@ -47,26 +57,48 @@ export const RestaurantCard = ({ r }: { r: Restaurant }) => {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="font-display text-xl font-bold text-secondary leading-tight truncate">{r.name}</h3>
-            <p className="text-xs text-secondary/70 mt-0.5">{r.cuisine} · {r.address}</p>
+            <p className="text-xs text-secondary/70 mt-0.5 truncate">{r.cuisine} · {r.address} · {r.weatherFit}</p>
           </div>
         </div>
 
-        {/* Data pills — always visible */}
-        <div className="mt-3 grid grid-cols-5 gap-1.5">
-          <DataPill icon={Footprints} label={r.walk} />
-          <DataPill icon={Clock} label={r.wait} />
-          <DataPill icon={Headphones} label={r.ambiance} />
-          <DataPill icon={Car} label={r.parking ? "Yes" : "No"} />
-          <DataPill icon={Wallet} label={r.budget.replace(" ", "")} compact />
+        {/* Data pills row 1 */}
+        <div className="mt-3 grid grid-cols-4 gap-1.5">
+          <DataPill icon={userHasCar ? Timer : Footprints} label={userHasCar ? r.drive : r.walk} sub={userHasCar ? "Drive" : "Walk"} />
+          <DataPill icon={Clock} label={r.wait} sub="Wait" />
+          <DataPill icon={Headphones} label={r.ambiance} sub="Vibe" />
+          <DataPill icon={Wallet} label={r.budget.split(" ")[0]} sub="From" />
         </div>
+
+        {/* Data pills row 2 — services */}
+        {!compact && (
+          <div className="mt-1.5 flex gap-1.5 flex-wrap">
+            <ServiceChip icon={Car} label="Parking" active={r.parking} />
+            <ServiceChip icon={Accessibility} label="Accessible" active={r.wheelchair} />
+            {mode === "quick" && (
+              <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+                ⚡ One-tap reserve
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );
 };
 
-const DataPill = ({ icon: Icon, label, compact }: { icon: any; label: string; compact?: boolean }) => (
+const DataPill = ({ icon: Icon, label, sub }: { icon: any; label: string; sub: string }) => (
   <div className="flex flex-col items-center gap-0.5 rounded-2xl bg-card py-2 px-1 shadow-soft">
     <Icon size={14} className="text-primary" strokeWidth={2.4} />
-    <span className={cn("font-bold text-secondary text-center leading-tight", compact ? "text-[9px]" : "text-[10px]")}>{label}</span>
+    <span className="font-bold text-secondary text-[10px] text-center leading-tight truncate max-w-full px-1">{label}</span>
+    <span className="text-[8px] text-secondary/60 uppercase tracking-wider">{sub}</span>
   </div>
+);
+
+const ServiceChip = ({ icon: Icon, label, active }: { icon: any; label: string; active: boolean }) => (
+  <span className={cn(
+    "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold",
+    active ? "bg-accent/40 text-secondary" : "bg-muted text-secondary/40 line-through"
+  )}>
+    <Icon size={11} /> {label}
+  </span>
 );
