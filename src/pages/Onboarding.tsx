@@ -245,6 +245,13 @@ const CONSTRAINTS = [
   { id: "kids", label: "With kids 👶", icon: Baby },
 ];
 
+const BUDGETS = [
+  { range: "3dt – 10dt", label: "Quick & cheap", emoji: "🥙" },
+  { range: "10dt – 35dt", label: "Everyday", emoji: "🍽️" },
+  { range: "35dt – 65dt", label: "Treat yourself", emoji: "🍷" },
+  { range: "65dt+", label: "Fine dining", emoji: "✨" },
+];
+
 const capital = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export default Onboarding;
