@@ -5,7 +5,7 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { ModeSwitch } from "@/components/ModeSwitch";
 import { useApp } from "@/state/AppState";
-import { toast } from "@/hooks/use-toast";
+
 
 const Home = () => {
   const { mode, memory, meetings, streakDays } = useApp();
