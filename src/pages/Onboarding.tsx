@@ -114,23 +114,32 @@ const Onboarding = () => {
 
         {current === "budget" && (
           <>
-            <Title eyebrow="Budget" title="What fits your wallet?" sub="Slide to set your comfort range." />
-            <div className="mt-10 soft-card p-6 bg-accent/30">
-              <div className="flex items-center justify-center gap-2">
-                <Wallet size={22} className="text-secondary" />
-                <span className="font-display text-3xl font-semibold">{budgetLabel}</span>
-              </div>
-              <Slider
-                value={budget}
-                onValueChange={setBudget}
-                min={0}
-                max={2}
-                step={1}
-                className="mt-8"
-              />
-              <div className="mt-4 flex justify-between text-xs font-medium text-muted-foreground">
-                <span>Cheap</span><span>Medium</span><span>Luxury</span>
-              </div>
+            <Title eyebrow="Budget" title="What fits your wallet?" sub="Pick the price range you're comfortable with." />
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {BUDGETS.map((b) => {
+                const active = budget === b.range;
+                return (
+                  <button
+                    key={b.range}
+                    onClick={() => setBudget(b.range)}
+                    className={cn(
+                      "soft-card p-5 text-left press transition-all relative",
+                      active ? "bg-primary text-primary-foreground shadow-glow" : "bg-card"
+                    )}
+                  >
+                    <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-3 text-lg", active ? "bg-primary-foreground/20" : "bg-highlight/50")}>
+                      {b.emoji}
+                    </div>
+                    <div className="font-display text-lg font-bold leading-tight">{b.range}</div>
+                    <div className={cn("text-xs mt-1", active ? "opacity-90" : "text-muted-foreground")}>{b.label}</div>
+                    {active && (
+                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-foreground/25 flex items-center justify-center">
+                        <Check size={14} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </>
         )}
