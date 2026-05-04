@@ -30,7 +30,7 @@
     --muted-foreground: 155 15% 35%;
 
     /* Accents */
-    --accent: 78 75% 70%;                /* lime/chartreuse for banners */
+    --accent: 18 80% 82%;                /* warm peach — replaces lime */
     --accent-foreground: 155 55% 14%;
 
     --info: 205 75% 88%;                 /* soft sky blue card */
@@ -61,7 +61,7 @@
     --sidebar-foreground: 155 55% 14%;
     --sidebar-primary: 330 70% 40%;
     --sidebar-primary-foreground: 18 65% 97%;
-    --sidebar-accent: 78 75% 70%;
+    --sidebar-accent: 18 80% 82%;
     --sidebar-accent-foreground: 155 55% 14%;
     --sidebar-border: 18 40% 88%;
     --sidebar-ring: 330 70% 40%;
@@ -80,7 +80,7 @@
     --secondary-foreground: 155 40% 8%;
     --muted: 155 25% 18%;
     --muted-foreground: 18 30% 75%;
-    --accent: 78 60% 55%;
+    --accent: 18 70% 65%;
     --accent-foreground: 155 40% 8%;
     --border: 155 25% 18%;
     --input: 155 25% 18%;
