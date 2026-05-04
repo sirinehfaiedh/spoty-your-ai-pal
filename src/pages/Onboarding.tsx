@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 type Lifestyle = "worker" | "student" | "other";
@@ -15,7 +14,7 @@ const Onboarding = () => {
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
   const [location, setLocation] = useState("Les Berges du Lac, Tunis");
-  const [budget, setBudget] = useState([1]); // 0 cheap, 1 medium, 2 luxury
+  const [budget, setBudget] = useState<string>("10dt – 35dt");
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
   const hasSchedule = lifestyle === "worker" || lifestyle === "student";
@@ -43,7 +42,7 @@ const Onboarding = () => {
     current === "constraints" ||
     current === "summary";
 
-  const budgetLabel = ["Cheap", "Medium", "Luxury"][budget[0]];
+  const budgetLabel = budget;
 
   return (
     <div className="phone-frame flex flex-col px-6 pt-6 pb-8">
