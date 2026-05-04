@@ -31,6 +31,8 @@ export type Memory = {
   morningHabit: string;
   recentMoods: string[];
   lastVisited: string[];
+  defaultPeople: number;
+  prefersSeating: "indoor" | "outdoor";
 };
 
 type AppCtx = {
@@ -65,6 +67,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     morningHabit: "Espresso · Tuesdays at 9:15",
     recentMoods: ["focused", "calm"],
     lastVisited: ["cafe-culture", "el-ali"],
+    defaultPeople: 2,
+    prefersSeating: "indoor",
   });
 
   const [meetings] = useState<Meeting[]>([
