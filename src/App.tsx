@@ -18,6 +18,7 @@ import Chat from "./pages/Chat";
 import Meeting from "./pages/Meeting";
 import Lists from "./pages/Lists";
 import GroupVote from "./pages/GroupVote";
+import Reserve from "./pages/Reserve";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/meeting/:id" element={<Meeting />} />
             <Route path="/lists" element={<Lists />} />
             <Route path="/group-vote" element={<GroupVote />} />
+            <Route path="/reserve/:id" element={<Reserve />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

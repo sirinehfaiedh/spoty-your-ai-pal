@@ -5,7 +5,7 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { ModeSwitch } from "@/components/ModeSwitch";
 import { useApp } from "@/state/AppState";
-import { toast } from "@/hooks/use-toast";
+
 
 const Home = () => {
   const { mode, memory, meetings, streakDays } = useApp();
@@ -16,9 +16,8 @@ const Home = () => {
   const picks = [...restaurants].sort((a, b) => b.affinity - a.affinity).slice(0, 3);
   const explorePicks = restaurants.slice(0, 4);
 
-  const reserveTopPick = () => {
-    toast({ title: `Reserved at ${topPick.name} ✓`, description: "Table for 1 · 12:30 · 15-min reminder set." });
-  };
+  // Reservation now navigates to dedicated flow
+
 
   return (
     <div className="phone-frame flex flex-col pb-2">
@@ -54,7 +53,7 @@ const Home = () => {
       )}
 
       {mode === "quick" ? (
-        <QuickMode topPick={topPick} picks={picks} memory={memory} onReserve={reserveTopPick} />
+        <QuickMode topPick={topPick} picks={picks} memory={memory} />
       ) : (
         <ExploreMode picks={explorePicks} />
       )}
@@ -79,18 +78,18 @@ const Home = () => {
   );
 };
 
-const QuickMode = ({ topPick, picks, memory, onReserve }: any) => (
+const QuickMode = ({ topPick, picks, memory }: any) => (
   <>
-    {/* Hero AI suggestion */}
-    <Link to={`/restaurant/${topPick.id}`} className="mx-6 mt-3 rounded-[2rem] overflow-hidden shadow-card press animate-slide-up block">
-      <div className="relative h-44">
+    {/* Hero AI suggestion — Best for you */}
+    <Link to={`/restaurant/${topPick.id}`} className="mx-6 mt-3 rounded-[2rem] overflow-hidden shadow-glow press animate-slide-up block ring-2 ring-primary">
+      <div className="relative h-48">
         <img src={topPick.image} alt={topPick.name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
-        <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-accent text-secondary text-[10px] font-bold px-2.5 py-1 rounded-full">
-          <Zap size={10} strokeWidth={3} /> Perfect for your break — no waiting
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary/85 via-secondary/25 to-transparent" />
+        <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1.5 rounded-full shadow-glow">
+          <Sparkles size={11} strokeWidth={3} /> Best for you
         </div>
-        <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
-          <Sparkles size={11} /> {topPick.affinity}%
+        <div className="absolute top-3 right-3 bg-card text-secondary text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
+          <Zap size={11} className="text-primary" /> {topPick.affinity}% match
         </div>
         <div className="absolute bottom-3 left-4 right-4 text-primary-foreground">
           <h2 className="font-display text-2xl font-bold leading-tight">{topPick.name}</h2>
@@ -98,10 +97,11 @@ const QuickMode = ({ topPick, picks, memory, onReserve }: any) => (
         </div>
       </div>
       <div className="p-3 bg-card flex gap-2">
-        <button
-          onClick={(e) => { e.preventDefault(); onReserve(); }}
-          className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-sm font-bold press shadow-glow"
-        >Reserve</button>
+        <Link
+          to={`/reserve/${topPick.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-sm font-bold press shadow-glow inline-flex items-center justify-center"
+        >Reserve</Link>
         <button
           onClick={(e) => { e.preventDefault(); }}
           className="flex-1 h-11 rounded-full bg-info text-secondary text-sm font-bold press inline-flex items-center justify-center gap-1.5"

@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 type Lifestyle = "worker" | "student" | "other";
@@ -15,7 +14,7 @@ const Onboarding = () => {
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
   const [location, setLocation] = useState("Les Berges du Lac, Tunis");
-  const [budget, setBudget] = useState([1]); // 0 cheap, 1 medium, 2 luxury
+  const [budget, setBudget] = useState<string>("10dt – 35dt");
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
   const hasSchedule = lifestyle === "worker" || lifestyle === "student";
@@ -43,7 +42,7 @@ const Onboarding = () => {
     current === "constraints" ||
     current === "summary";
 
-  const budgetLabel = ["Cheap", "Medium", "Luxury"][budget[0]];
+  const budgetLabel = budget;
 
   return (
     <div className="phone-frame flex flex-col px-6 pt-6 pb-8">
@@ -115,23 +114,32 @@ const Onboarding = () => {
 
         {current === "budget" && (
           <>
-            <Title eyebrow="Budget" title="What fits your wallet?" sub="Slide to set your comfort range." />
-            <div className="mt-10 soft-card p-6 bg-accent/30">
-              <div className="flex items-center justify-center gap-2">
-                <Wallet size={22} className="text-secondary" />
-                <span className="font-display text-3xl font-semibold">{budgetLabel}</span>
-              </div>
-              <Slider
-                value={budget}
-                onValueChange={setBudget}
-                min={0}
-                max={2}
-                step={1}
-                className="mt-8"
-              />
-              <div className="mt-4 flex justify-between text-xs font-medium text-muted-foreground">
-                <span>Cheap</span><span>Medium</span><span>Luxury</span>
-              </div>
+            <Title eyebrow="Budget" title="What fits your wallet?" sub="Pick the price range you're comfortable with." />
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {BUDGETS.map((b) => {
+                const active = budget === b.range;
+                return (
+                  <button
+                    key={b.range}
+                    onClick={() => setBudget(b.range)}
+                    className={cn(
+                      "soft-card p-5 text-left press transition-all relative",
+                      active ? "bg-primary text-primary-foreground shadow-glow" : "bg-card"
+                    )}
+                  >
+                    <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-3 text-lg", active ? "bg-primary-foreground/20" : "bg-highlight/50")}>
+                      {b.emoji}
+                    </div>
+                    <div className="font-display text-lg font-bold leading-tight">{b.range}</div>
+                    <div className={cn("text-xs mt-1", active ? "opacity-90" : "text-muted-foreground")}>{b.label}</div>
+                    {active && (
+                      <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-foreground/25 flex items-center justify-center">
+                        <Check size={14} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </>
         )}
@@ -235,6 +243,13 @@ const CONSTRAINTS = [
   { id: "diabetes", label: "Diabetes-friendly", icon: Heart },
   { id: "halal", label: "Halal", icon: Utensils },
   { id: "kids", label: "With kids 👶", icon: Baby },
+];
+
+const BUDGETS = [
+  { range: "3dt – 10dt", label: "Quick & cheap", emoji: "🥙" },
+  { range: "10dt – 35dt", label: "Everyday", emoji: "🍽️" },
+  { range: "35dt – 65dt", label: "Treat yourself", emoji: "🍷" },
+  { range: "65dt+", label: "Fine dining", emoji: "✨" },
 ];
 
 const capital = (s: string) => s[0].toUpperCase() + s.slice(1);

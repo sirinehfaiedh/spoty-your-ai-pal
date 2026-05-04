@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2, XCircle } from "lucide-react";
 import { findRestaurant } from "@/data/restaurants";
 import { Button } from "@/components/ui/button";
 
@@ -110,11 +110,17 @@ const RestaurantDetails = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="px-6 mt-8 sticky bottom-4">
-        <Button size="lg" className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow">
-          Reserve a table
-        </Button>
+      {/* Availability + CTA */}
+      <div className="px-6 mt-8 sticky bottom-4 space-y-3">
+        <div className="rounded-[1.25rem] bg-accent/40 p-3 flex items-center gap-2">
+          <CheckCircle2 size={18} className="text-secondary" />
+          <span className="text-sm font-bold text-secondary">Reservation available today</span>
+        </div>
+        <Link to={`/reserve/${r.id}`} className="block">
+          <Button size="lg" className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow">
+            Reserve a table
+          </Button>
+        </Link>
       </div>
     </div>
   );
