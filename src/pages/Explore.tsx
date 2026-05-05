@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { Search, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, MapPin, Maximize2 } from "lucide-react";
 import { restaurants } from "@/data/restaurants";
+import { RestaurantCard } from "@/components/RestaurantCard";
+import { TabBar } from "@/components/TabBar";
+import { cn } from "@/lib/utils";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { cn } from "@/lib/utils";
