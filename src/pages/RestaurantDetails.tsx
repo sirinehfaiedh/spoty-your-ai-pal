@@ -38,7 +38,7 @@ const RestaurantDetails = () => {
         </Link>
         <div className="absolute top-6 right-5 flex gap-2">
           <button className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press"><Share2 size={16} /></button>
-          <button className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center press shadow-glow"><Heart size={16} className="fill-current" /></button>
+          <button onClick={() => setSheetOpen(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center press shadow-glow"><Heart size={16} className={inAnyList ? "fill-current" : ""} /></button>
         </div>
         <div className="absolute bottom-4 left-5 right-5 text-primary-foreground">
           <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">{r.tag}</span>
