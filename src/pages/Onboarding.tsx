@@ -39,7 +39,7 @@ const Onboarding = () => {
   const canNext =
     (current === "lifestyle" && !!lifestyle) ||
     (current === "schedule" && !!breakTime) ||
-    (current === "location" && location.length > 2) ||
+    (current === "location" && locationMode !== "choose" && !detecting && location.length > 2) ||
     current === "budget" ||
     current === "constraints" ||
     current === "summary";
