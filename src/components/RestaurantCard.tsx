@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Footprints, Clock, Headphones, Car, Wallet, Star, Accessibility, Sparkles, Timer } from "lucide-react";
+import { Footprints, Clock, Headphones, Car, Wallet, Star, Accessibility, Sparkles, Timer, Heart } from "lucide-react";
 import type { Restaurant } from "@/data/restaurants";
 import { useApp } from "@/state/AppState";
 import { cn } from "@/lib/utils";
+import { SaveSheet } from "@/components/SaveSheet";
 
 const toneMap: Record<Restaurant["tone"], string> = {
   green: "bg-accent",
@@ -12,8 +14,10 @@ const toneMap: Record<Restaurant["tone"], string> = {
 };
 
 export const RestaurantCard = ({ r, compact = false }: { r: Restaurant; compact?: boolean }) => {
-  const { mode } = useApp();
-  const userHasCar = true; // demo: would come from profile prefs
+  const { mode, lists, toggleSaved, saved } = useApp();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const userHasCar = true;
+  const isInAnyList = lists.some((l) => l.items.includes(r.id)) || saved.includes(r.id);
 
   return (
     <Link to={`/restaurant/${r.id}`} className="block press animate-fade-in">
