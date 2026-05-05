@@ -130,6 +130,8 @@ const RestaurantDetails = () => {
         </Link>
       </div>
     </div>
+    {sheetOpen && <SaveSheet restaurantId={r.id} onClose={() => setSheetOpen(false)} />}
+    </>
   );
 };
 
