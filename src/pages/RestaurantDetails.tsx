@@ -22,8 +22,12 @@ const reviews = [
 const RestaurantDetails = () => {
   const { id = "" } = useParams();
   const r = findRestaurant(id);
+  const { lists } = useApp();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const inAnyList = lists.some((l) => l.items.includes(r.id));
 
   return (
+    <>
     <div className="phone-frame flex flex-col pb-8 bg-background">
       {/* Hero */}
       <div className="relative h-72 w-full overflow-hidden rounded-b-[2.5rem]">
