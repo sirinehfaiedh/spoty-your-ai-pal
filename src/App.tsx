@@ -49,7 +49,13 @@ const App = () => (
             <Route path="/chat" element={<Chat />} />
             <Route path="/meeting/:id" element={<Meeting />} />
             <Route path="/lists" element={<Lists />} />
+            <Route path="/lists/:id" element={<ListDetail />} />
             <Route path="/group-vote" element={<GroupVote />} />
+            <Route path="/reserve/:id" element={<Reserve />} />
+            <Route path="/map" element={<MapView />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/plans/new" element={<NewPlan />} />
+            <Route path="/plans/:id" element={<PlanDetail />} />
             <Route path="/reserve/:id" element={<Reserve />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
