@@ -17,8 +17,13 @@ import Voice from "./pages/Voice";
 import Chat from "./pages/Chat";
 import Meeting from "./pages/Meeting";
 import Lists from "./pages/Lists";
+import ListDetail from "./pages/ListDetail";
 import GroupVote from "./pages/GroupVote";
 import Reserve from "./pages/Reserve";
+import MapView from "./pages/MapView";
+import Plans from "./pages/Plans";
+import PlanDetail from "./pages/PlanDetail";
+import NewPlan from "./pages/NewPlan";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
