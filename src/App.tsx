@@ -17,8 +17,13 @@ import Voice from "./pages/Voice";
 import Chat from "./pages/Chat";
 import Meeting from "./pages/Meeting";
 import Lists from "./pages/Lists";
+import ListDetail from "./pages/ListDetail";
 import GroupVote from "./pages/GroupVote";
 import Reserve from "./pages/Reserve";
+import MapView from "./pages/MapView";
+import Plans from "./pages/Plans";
+import PlanDetail from "./pages/PlanDetail";
+import NewPlan from "./pages/NewPlan";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -44,8 +49,13 @@ const App = () => (
             <Route path="/chat" element={<Chat />} />
             <Route path="/meeting/:id" element={<Meeting />} />
             <Route path="/lists" element={<Lists />} />
+            <Route path="/lists/:id" element={<ListDetail />} />
             <Route path="/group-vote" element={<GroupVote />} />
             <Route path="/reserve/:id" element={<Reserve />} />
+            <Route path="/map" element={<MapView />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/plans/new" element={<NewPlan />} />
+            <Route path="/plans/:id" element={<PlanDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

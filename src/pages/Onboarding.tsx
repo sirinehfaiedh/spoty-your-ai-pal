@@ -13,7 +13,9 @@ const Onboarding = () => {
   const [step, setStep] = useState(0);
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
-  const [location, setLocation] = useState("Les Berges du Lac, Tunis");
+  const [location, setLocation] = useState("");
+  const [locationMode, setLocationMode] = useState<"choose" | "auto" | "manual">("choose");
+  const [detecting, setDetecting] = useState(false);
   const [budget, setBudget] = useState<string>("10dt – 35dt");
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
@@ -37,7 +39,7 @@ const Onboarding = () => {
   const canNext =
     (current === "lifestyle" && !!lifestyle) ||
     (current === "schedule" && !!breakTime) ||
-    (current === "location" && location.length > 2) ||
+    (current === "location" && locationMode !== "choose" && !detecting && location.length > 2) ||
     current === "budget" ||
     current === "constraints" ||
     current === "summary";
@@ -91,24 +93,112 @@ const Onboarding = () => {
 
         {current === "location" && (
           <>
-            <Title eyebrow="Location" title="Where should we search around?" sub="Your work or home address — we keep it private." />
-            <div className="mt-8">
-              <div className="flex items-center gap-3 bg-card rounded-2xl px-4 h-14 shadow-soft">
-                <MapPin size={18} className="text-primary" />
-                <Input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-base"
-                />
+            <Title
+              eyebrow="Location"
+              title={
+                lifestyle === "worker" ? "Where do you work?"
+                : lifestyle === "student" ? "Where do you study?"
+                : "Where should we look?"
+              }
+              sub="Spoty needs this to suggest spots you can actually reach."
+            />
+
+            {locationMode === "choose" && (
+              <div className="mt-8 space-y-3 animate-fade-in">
+                <button
+                  onClick={() => {
+                    setLocationMode("auto");
+                    setDetecting(true);
+                    if (!navigator.geolocation) {
+                      setTimeout(() => { setLocation("Les Berges du Lac, Tunis"); setDetecting(false); }, 900);
+                      return;
+                    }
+                    navigator.geolocation.getCurrentPosition(
+                      () => { setLocation("Current location · Les Berges du Lac"); setDetecting(false); },
+                      () => { setLocation("Les Berges du Lac, Tunis"); setDetecting(false); },
+                      { timeout: 4000 }
+                    );
+                  }}
+                  className="w-full soft-card bg-primary text-primary-foreground p-5 flex items-center gap-4 shadow-glow press text-left"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
+                    <MapPin size={22} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-display text-lg font-bold">Use my current location</p>
+                    <p className="text-xs opacity-85">Fast & accurate · permission required</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setLocationMode("manual")}
+                  className="w-full soft-card bg-card p-5 flex items-center gap-4 press text-left"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-highlight/50 flex items-center justify-center text-2xl">✍️</div>
+                  <div className="flex-1">
+                    <p className="font-display text-lg font-bold text-secondary">Enter manually</p>
+                    <p className="text-xs text-secondary/60">
+                      {lifestyle === "worker" ? "Workplace or office address" : lifestyle === "student" ? "University or campus" : "Preferred area"}
+                    </p>
+                  </div>
+                </button>
+
+                <p className="text-[11px] text-center text-secondary/50 mt-2">We never share your location with anyone.</p>
               </div>
-              <div className="mt-4 flex gap-2 flex-wrap">
-                {["Les Berges du Lac", "La Marsa", "Sidi Bou Said", "Centre Urbain Nord"].map((s) => (
-                  <button key={s} onClick={() => setLocation(s + ", Tunis")} className="chip press">
-                    {s}
-                  </button>
-                ))}
+            )}
+
+            {locationMode === "auto" && (
+              <div className="mt-8 soft-card bg-info p-6 text-center animate-fade-in">
+                {detecting ? (
+                  <>
+                    <div className="relative w-16 h-16 mx-auto">
+                      <span className="absolute inset-0 rounded-full bg-primary/40 animate-pulse-ring" />
+                      <span className="relative w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                        <MapPin size={26} />
+                      </span>
+                    </div>
+                    <p className="mt-5 font-display text-lg font-bold text-secondary">Detecting your location…</p>
+                    <p className="text-xs text-secondary/60 mt-1">This takes a few seconds</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-14 h-14 rounded-full bg-accent mx-auto flex items-center justify-center">
+                      <Check size={26} className="text-secondary" />
+                    </div>
+                    <p className="mt-4 font-display text-lg font-bold text-secondary">Location detected</p>
+                    <p className="text-sm text-secondary/80 mt-1">{location}</p>
+                    <button onClick={() => setLocationMode("choose")} className="mt-3 text-xs font-bold text-primary press">Change</button>
+                  </>
+                )}
               </div>
-            </div>
+            )}
+
+            {locationMode === "manual" && (
+              <div className="mt-8 animate-fade-in">
+                <div className="flex items-center gap-3 bg-card rounded-2xl px-4 h-14 shadow-soft">
+                  <MapPin size={18} className="text-primary" />
+                  <Input
+                    autoFocus
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder={
+                      lifestyle === "worker" ? "e.g. Orange HQ, Lac 2"
+                      : lifestyle === "student" ? "e.g. ENIT, Belvédère"
+                      : "Neighborhood or address"
+                    }
+                    className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 text-base"
+                  />
+                </div>
+                <div className="mt-4 flex gap-2 flex-wrap">
+                  {["Les Berges du Lac", "La Marsa", "Sidi Bou Said", "Centre Urbain Nord", "Manar", "Belvédère"].map((s) => (
+                    <button key={s} onClick={() => setLocation(s + ", Tunis")} className="chip press">
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setLocationMode("choose")} className="mt-3 text-xs font-bold text-primary press">← Use current location instead</button>
+              </div>
+            )}
           </>
         )}
 

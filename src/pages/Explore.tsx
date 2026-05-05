@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, MapPin, Maximize2 } from "lucide-react";
 import { restaurants } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
@@ -21,8 +22,8 @@ const Explore = () => {
         </div>
       </header>
 
-      {/* Map preview */}
-      <div className="mx-6 rounded-[1.75rem] overflow-hidden bg-accent/30 h-32 relative shadow-soft">
+      {/* Map preview — tap to open full map */}
+      <Link to="/map" className="mx-6 rounded-[1.75rem] overflow-hidden bg-accent/30 h-32 relative shadow-soft press block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,hsl(var(--highlight)/0.5),transparent_60%),radial-gradient(circle_at_70%_70%,hsl(var(--primary)/0.3),transparent_60%)]" />
         <div className="absolute inset-0 grid grid-cols-8 grid-rows-4">
           {Array.from({ length: 32 }).map((_, i) => (
@@ -35,7 +36,10 @@ const Explore = () => {
         <div className="absolute bottom-3 left-3 bg-background/90 rounded-full px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5">
           <MapPin size={12} className="text-primary" /> La Marsa · 5 nearby
         </div>
-      </div>
+        <div className="absolute top-3 right-3 bg-primary text-primary-foreground rounded-full px-3 py-1.5 text-[10px] font-bold flex items-center gap-1.5 shadow-glow">
+          <Maximize2 size={11} /> Open map
+        </div>
+      </Link>
 
       {/* Categories */}
       <div className="mt-5 px-6 flex gap-2 overflow-x-auto no-scrollbar pb-1">
