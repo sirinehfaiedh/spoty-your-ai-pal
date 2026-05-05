@@ -56,7 +56,6 @@ const App = () => (
             <Route path="/plans" element={<Plans />} />
             <Route path="/plans/new" element={<NewPlan />} />
             <Route path="/plans/:id" element={<PlanDetail />} />
-            <Route path="/reserve/:id" element={<Reserve />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
