@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2 } from "lucide-react";
 import { findRestaurant } from "@/data/restaurants";
+import { useApp } from "@/state/AppState";
+import { SaveSheet } from "@/components/SaveSheet";
 import { Button } from "@/components/ui/button";
 
 const menu = [
