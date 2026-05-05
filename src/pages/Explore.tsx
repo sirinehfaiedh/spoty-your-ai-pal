@@ -5,9 +5,6 @@ import { restaurants } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { cn } from "@/lib/utils";
-import { RestaurantCard } from "@/components/RestaurantCard";
-import { TabBar } from "@/components/TabBar";
-import { cn } from "@/lib/utils";
 
 const categories = ["Cheap eats", "Romantic", "Work-friendly", "Family", "Authentic", "Quick"];
 
