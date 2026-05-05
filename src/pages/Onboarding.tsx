@@ -13,7 +13,9 @@ const Onboarding = () => {
   const [step, setStep] = useState(0);
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
-  const [location, setLocation] = useState("Les Berges du Lac, Tunis");
+  const [location, setLocation] = useState("");
+  const [locationMode, setLocationMode] = useState<"choose" | "auto" | "manual">("choose");
+  const [detecting, setDetecting] = useState(false);
   const [budget, setBudget] = useState<string>("10dt – 35dt");
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
