@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Mic, MessageSquare, Calendar, Zap, MapPin, TrendingUp, Bookmark, Search, Coffee, Briefcase, Sparkles } from "lucide-react";
-import { restaurants } from "@/data/restaurants";
+import { Mic, MessageSquare, Calendar, Zap, MapPin, TrendingUp, Bookmark, Search, Coffee, Sparkles, Leaf } from "lucide-react";
+import { restaurants, currentMealCategory, mealCopy } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { ModeSwitch } from "@/components/ModeSwitch";
@@ -11,12 +11,21 @@ const Home = () => {
   const { mode, memory, meetings, streakDays } = useApp();
   const upcoming = meetings[0];
 
-  // Quick mode: top affinity match first
-  const topPick = [...restaurants].sort((a, b) => b.affinity - a.affinity)[0];
-  const picks = [...restaurants].sort((a, b) => b.affinity - a.affinity).slice(0, 3);
-  const explorePicks = restaurants.slice(0, 4);
+  // Contextual: filter by current meal category, then dietary, then affinity
+  const meal = currentMealCategory();
+  const ctx = mealCopy[meal];
+  const dietActive = memory.dietary.length > 0;
+  const matchesDiet = (r: typeof restaurants[number]) =>
+    !dietActive || memory.dietary.some((d) => r.diet.includes(d));
 
-  // Reservation now navigates to dedicated flow
+  const contextual = restaurants
+    .filter((r) => r.mealCategory === meal && matchesDiet(r))
+    .sort((a, b) => b.affinity - a.affinity);
+  const fallback = restaurants.filter(matchesDiet).sort((a, b) => b.affinity - a.affinity);
+  const ranked = (contextual.length ? contextual : fallback);
+  const topPick = ranked[0];
+  const picks = (ranked.length >= 3 ? ranked : fallback).slice(0, 3);
+  const explorePicks = restaurants.slice(0, 4);
 
 
   return (
@@ -53,7 +62,7 @@ const Home = () => {
       )}
 
       {mode === "quick" ? (
-        <QuickMode topPick={topPick} picks={picks} memory={memory} />
+        <QuickMode topPick={topPick} picks={picks} memory={memory} ctx={ctx} dietActive={dietActive} />
       ) : (
         <ExploreMode picks={explorePicks} />
       )}
