@@ -87,21 +87,34 @@ const Home = () => {
   );
 };
 
-const QuickMode = ({ topPick, picks, memory }: any) => (
+const QuickMode = ({ topPick, picks, memory, ctx, dietActive }: any) => (
   <>
-    {/* Hero AI suggestion — Best for you */}
+    {/* Contextual eyebrow */}
+    <div className="mx-6 mt-2 flex items-center gap-2">
+      <span className="inline-flex items-center gap-1.5 bg-card text-secondary text-[11px] font-bold px-3 py-1.5 rounded-full shadow-soft">
+        <span>{ctx.emoji}</span> {ctx.eyebrow}
+      </span>
+      {dietActive && (
+        <span className="inline-flex items-center gap-1 bg-accent/50 text-secondary text-[11px] font-bold px-3 py-1.5 rounded-full">
+          <Leaf size={11} className="text-primary" /> {memory.dietary.join(" · ")}
+        </span>
+      )}
+    </div>
+
+    {/* Hero AI suggestion — Food first in Quick mode */}
     <Link to={`/restaurant/${topPick.id}`} className="mx-6 mt-3 rounded-[2rem] overflow-hidden shadow-glow press animate-slide-up block ring-2 ring-primary">
-      <div className="relative h-48">
-        <img src={topPick.image} alt={topPick.name} className="w-full h-full object-cover" />
+      <div className="relative h-56">
+        <img src={topPick.dishImage} alt={topPick.dishName} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/85 via-secondary/25 to-transparent" />
         <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1.5 rounded-full shadow-glow">
-          <Sparkles size={11} strokeWidth={3} /> Best for you
+          <Sparkles size={11} strokeWidth={3} /> {ctx.title}
         </div>
         <div className="absolute top-3 right-3 bg-card text-secondary text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
           <Zap size={11} className="text-primary" /> {topPick.affinity}% match
         </div>
         <div className="absolute bottom-3 left-4 right-4 text-primary-foreground">
-          <h2 className="font-display text-2xl font-bold leading-tight">{topPick.name}</h2>
+          <p className="text-[11px] uppercase tracking-wider opacity-90 font-bold">🍽️ {topPick.dishName}</p>
+          <h2 className="font-display text-2xl font-bold leading-tight mt-0.5">{topPick.name}</h2>
           <p className="text-xs opacity-90 mt-0.5">{topPick.ambiance} · {topPick.drive} drive · {topPick.budget}</p>
         </div>
       </div>
@@ -140,7 +153,7 @@ const QuickMode = ({ topPick, picks, memory }: any) => (
     {/* Other top matches */}
     <section className="mt-7 px-6">
       <div className="flex items-end justify-between mb-4">
-        <h2 className="font-display text-xl font-bold text-secondary">Other strong matches</h2>
+        <h2 className="font-display text-xl font-bold text-secondary">More for {ctx.eyebrow.toLowerCase()}</h2>
         <span className="text-[10px] font-bold uppercase tracking-wider text-primary inline-flex items-center gap-1"><TrendingUp size={11} /> Live affinity</span>
       </div>
       <div className="space-y-4">
