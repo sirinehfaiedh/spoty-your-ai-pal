@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { Briefcase, Clock, MapPin, Wallet, Accessibility, Pencil, LogOut, Sparkles, Trophy, Flame, Lock, Calendar, MessageSquare, Users } from "lucide-react";
+import { Briefcase, Clock, MapPin, Wallet, Accessibility, Pencil, LogOut, Sparkles, Trophy, Flame, Lock, Calendar, MessageSquare, Users, Eye, EyeOff, Bell } from "lucide-react";
 import { TabBar } from "@/components/TabBar";
 import { useApp } from "@/state/AppState";
 
 const Profile = () => {
-  const { level, streakDays, badges, memory, meetings } = useApp();
+  const { level, streakDays, badges, memory, meetings, locationSharing, setLocationSharing, invitations } = useApp();
   const xpPct = Math.round((level.xp / level.nextXp) * 100);
+  const pendingInvites = invitations.filter((i) => i.direction === "incoming" && i.status === "pending").length;
 
   return (
     <div className="phone-frame flex flex-col pb-2">
@@ -89,6 +90,35 @@ const Profile = () => {
         </Link>
       </section>
 
+      {/* Privacy & sharing */}
+      <div className="px-6 mt-6">
+        <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-secondary/60 mb-3">Privacy</h3>
+        <div className="rounded-2xl bg-card p-4 flex items-center gap-3 shadow-soft">
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${locationSharing ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+            {locationSharing ? <Eye size={18} /> : <EyeOff size={18} className="text-secondary/60" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-secondary text-sm">Allow friends to see my location</p>
+            <p className="text-[11px] text-secondary/60">{locationSharing ? "You appear on the map for friends" : "You're invisible — you can still see them"}</p>
+          </div>
+          <button
+            onClick={() => setLocationSharing(!locationSharing)}
+            className={`relative w-12 h-7 rounded-full transition-colors press ${locationSharing ? "bg-primary" : "bg-muted"}`}
+            aria-label="Toggle location sharing"
+          >
+            <span className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-background shadow-soft transition-transform ${locationSharing ? "translate-x-5" : ""}`} />
+          </button>
+        </div>
+        <Link to="/invitations" className="mt-2 rounded-2xl bg-info p-4 flex items-center gap-3 press">
+          <div className="w-11 h-11 rounded-xl bg-background flex items-center justify-center"><Bell size={18} className="text-primary" /></div>
+          <div className="flex-1">
+            <p className="font-bold text-secondary text-sm">Invitations</p>
+            <p className="text-[11px] text-secondary/60">{pendingInvites} pending · accept, decline or maybe</p>
+          </div>
+          {pendingInvites > 0 && <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{pendingInvites}</span>}
+        </Link>
+      </div>
+
       {/* Preferences */}
       <div className="px-6 mt-6">
         <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-secondary/60 mb-3">Your preferences</h3>
@@ -96,8 +126,8 @@ const Profile = () => {
           <Row icon={Briefcase} label="Lifestyle" value="Worker" tone="yellow" />
           <Row icon={Clock} label="Break time" value="12:00" tone="green" />
           <Row icon={MapPin} label="Location" value="Les Berges du Lac" tone="beige" />
-          <Row icon={Wallet} label="Budget" value="Medium" tone="orange" />
-          <Row icon={Accessibility} label="Constraints" value="Halal · Gluten-free" tone="green" />
+          <Row icon={Wallet} label="Budget" value="10dt – 35dt" tone="orange" />
+          <Row icon={Accessibility} label="Dietary" value={memory.dietary.length ? memory.dietary.join(" · ") : "None"} tone="green" />
           <Row icon={Sparkles} label="AI mood memory" value={memory.recentMoods.slice(0, 3).join(" · ") || "—"} tone="yellow" />
         </div>
       </div>

@@ -24,6 +24,7 @@ import MapView from "./pages/MapView";
 import Plans from "./pages/Plans";
 import PlanDetail from "./pages/PlanDetail";
 import NewPlan from "./pages/NewPlan";
+import Invitations from "./pages/Invitations";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/plans" element={<Plans />} />
             <Route path="/plans/new" element={<NewPlan />} />
             <Route path="/plans/:id" element={<PlanDetail />} />
+            <Route path="/invitations" element={<Invitations />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
