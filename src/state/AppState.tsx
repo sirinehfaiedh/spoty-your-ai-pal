@@ -16,7 +16,7 @@ export type ListItem = {
   name: string;
   emoji: string;
   shared: boolean;
-  items: string[]; // restaurant ids
+  items: string[];
 };
 
 export type Badge = {
@@ -33,6 +33,7 @@ export type Memory = {
   lastVisited: string[];
   defaultPeople: number;
   prefersSeating: "indoor" | "outdoor";
+  dietary: string[]; // vegan, vegetarian, gluten-free, lactose-free, halal
 };
 
 export type PlanType = "date" | "friends" | "work" | "family";
@@ -48,6 +49,30 @@ export type Plan = {
   endsIn: string;
   candidates: { restaurantId: string; votes: number }[];
   decidedRestaurantId?: string;
+};
+
+export type Friend = {
+  id: string;
+  name: string;
+  initial: string;
+  status: string;
+  location: string;
+  sharingLocation: boolean;
+  x: number;
+  y: number;
+};
+
+export type InvitationStatus = "pending" | "accepted" | "declined" | "maybe";
+export type Invitation = {
+  id: string;
+  restaurantId: string;
+  fromName: string;
+  toFriendIds: string[];
+  message?: string;
+  when: string;
+  direction: "outgoing" | "incoming";
+  status: InvitationStatus;
+  createdAt: number;
 };
 
 type AppCtx = {
@@ -73,9 +98,19 @@ type AppCtx = {
   plans: Plan[];
   createPlan: (p: Omit<Plan, "id" | "lastActivity" | "endsIn" | "candidates" | "status">) => string;
   votePlan: (planId: string, restaurantId: string) => void;
-  // legacy single vote (kept for old screen)
   groupVote: { restaurantId: string; votes: number; voter: string }[];
   vote: (restaurantId: string, voter: string) => void;
+
+  // Friends + privacy
+  friends: Friend[];
+  toggleFriendSharing: (id: string) => void;
+  locationSharing: boolean;
+  setLocationSharing: (v: boolean) => void;
+
+  // Invitations
+  invitations: Invitation[];
+  sendInvitation: (i: Omit<Invitation, "id" | "direction" | "status" | "createdAt">) => string;
+  respondInvitation: (id: string, status: InvitationStatus) => void;
 };
 
 const AppContext = createContext<AppCtx | null>(null);
@@ -90,6 +125,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     lastVisited: ["cafe-culture", "el-ali"],
     defaultPeople: 2,
     prefersSeating: "indoor",
+    dietary: ["halal"],
   });
 
   const [meetings] = useState<Meeting[]>([
@@ -104,8 +140,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   ]);
 
   const [plans, setPlans] = useState<Plan[]>([
-    {
-      id: "p1", name: "Friday Dinner", emoji: "🍽️", type: "friends", status: "voting",
+    { id: "p1", name: "Friday Dinner", emoji: "🍽️", type: "friends", status: "voting",
       participants: ["You", "Yasmine", "Mehdi", "Lina"],
       lastActivity: "Lina voted 12 min ago", endsIn: "ends in 2h",
       candidates: [
@@ -114,8 +149,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
         { restaurantId: "le-golfe", votes: 1 },
       ],
     },
-    {
-      id: "p2", name: "Team Lunch", emoji: "💼", type: "work", status: "voting",
+    { id: "p2", name: "Team Lunch", emoji: "💼", type: "work", status: "voting",
       participants: ["You", "Mehdi", "Sofia", "Ali", "Nour"],
       lastActivity: "Sofia added Café Culture", endsIn: "ends Thu 11:00",
       candidates: [
@@ -123,15 +157,13 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
         { restaurantId: "dar-el-marsa", votes: 2 },
       ],
     },
-    {
-      id: "p3", name: "Date Night", emoji: "❤️", type: "date", status: "decided",
+    { id: "p3", name: "Date Night", emoji: "❤️", type: "date", status: "decided",
       participants: ["You", "Salma"],
       lastActivity: "Reserved · 20:30", endsIn: "Saturday",
       candidates: [{ restaurantId: "the-cliff", votes: 2 }],
       decidedRestaurantId: "the-cliff",
     },
-    {
-      id: "p4", name: "Weekend Hangout", emoji: "🎉", type: "friends", status: "planning",
+    { id: "p4", name: "Weekend Hangout", emoji: "🎉", type: "friends", status: "planning",
       participants: ["You", "Aymen", "Rim"],
       lastActivity: "Aymen suggested La Goulette", endsIn: "Sunday",
       candidates: [{ restaurantId: "le-golfe", votes: 1 }, { restaurantId: "el-ali", votes: 1 }],
@@ -142,6 +174,24 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     { restaurantId: "the-cliff", votes: 3, voter: "Group" },
     { restaurantId: "dar-el-marsa", votes: 2, voter: "Group" },
     { restaurantId: "le-golfe", votes: 1, voter: "Group" },
+  ]);
+
+  const [friends, setFriends] = useState<Friend[]>([
+    { id: "yas", name: "Yasmine",  initial: "Y", status: "Working",  location: "Lac 2",         sharingLocation: true,  x: 28, y: 38 },
+    { id: "meh", name: "Mehdi",    initial: "M", status: "At lunch", location: "Centre Urbain", sharingLocation: true,  x: 62, y: 24 },
+    { id: "lin", name: "Lina",     initial: "L", status: "Coffee",   location: "La Marsa",      sharingLocation: true,  x: 48, y: 70 },
+    { id: "sof", name: "Sofia",    initial: "S", status: "Walking",  location: "Sidi Bou Said", sharingLocation: false, x: 78, y: 58 },
+    { id: "aym", name: "Aymen",    initial: "A", status: "Available",location: "Manar",         sharingLocation: false, x: 35, y: 18 },
+    { id: "rim", name: "Rim",      initial: "R", status: "Studying", location: "Belvédère",     sharingLocation: true,  x: 70, y: 78 },
+    { id: "ali", name: "Ali",      initial: "A", status: "Free now", location: "Lac 1",         sharingLocation: false, x: 20, y: 60 },
+    { id: "nou", name: "Nour",     initial: "N", status: "Working",  location: "Centre Urbain", sharingLocation: true,  x: 55, y: 50 },
+  ]);
+
+  const [locationSharing, setLocationSharing] = useState<boolean>(true);
+
+  const [invitations, setInvitations] = useState<Invitation[]>([
+    { id: "i-in-1", restaurantId: "the-cliff", fromName: "Yasmine", toFriendIds: ["me"], message: "Sunset dinner?", when: "Tonight · 19:30", direction: "incoming", status: "pending", createdAt: Date.now() - 600000 },
+    { id: "i-in-2", restaurantId: "cafe-culture", fromName: "Mehdi", toFriendIds: ["me"], message: "Quick coffee before the meeting", when: "Today · 10:30", direction: "incoming", status: "pending", createdAt: Date.now() - 1200000 },
   ]);
 
   const value = useMemo<AppCtx>(
@@ -200,8 +250,20 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
             ? prev.map((v) => (v.restaurantId === rid ? { ...v, votes: v.votes + 1, voter } : v))
             : [...prev, { restaurantId: rid, votes: 1, voter }];
         }),
+      friends,
+      toggleFriendSharing: (id) => setFriends((p) => p.map((f) => (f.id === id ? { ...f, sharingLocation: !f.sharingLocation } : f))),
+      locationSharing,
+      setLocationSharing,
+      invitations,
+      sendInvitation: (i) => {
+        const id = `i-out-${Date.now()}`;
+        setInvitations((p) => [{ ...i, id, direction: "outgoing", status: "pending", createdAt: Date.now() }, ...p]);
+        return id;
+      },
+      respondInvitation: (id, status) =>
+        setInvitations((p) => p.map((iv) => (iv.id === id ? { ...iv, status } : iv))),
     }),
-    [mode, saved, memory, meetings, lists, plans, groupVote]
+    [mode, saved, memory, meetings, lists, plans, groupVote, friends, locationSharing, invitations]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
