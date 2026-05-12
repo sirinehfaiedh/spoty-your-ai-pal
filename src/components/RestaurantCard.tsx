@@ -24,15 +24,18 @@ export const RestaurantCard = ({ r, compact = false }: { r: Restaurant; compact?
       <Link to={`/restaurant/${r.id}`} className="block press animate-fade-in">
         <div className={cn("relative w-full overflow-hidden rounded-[1.75rem] shadow-card", compact ? "h-44" : "h-56")}>
           <img
-            src={r.image}
-            alt={`${r.name} — ${r.cuisine}`}
+            src={mode === "quick" ? r.dishImage : r.image}
+            alt={mode === "quick" ? `${r.dishName} at ${r.name}` : `${r.name} — ${r.cuisine}`}
             loading="lazy"
             width={768}
             height={512}
             className="h-full w-full object-cover"
           />
+          {mode === "quick" && (
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-secondary/80 to-transparent" />
+          )}
           <span className={cn("absolute top-3 left-3 text-secondary text-xs font-bold px-3 py-1.5 rounded-full", toneMap[r.tone])}>
-            {r.tag}
+            {mode === "quick" ? `🍽️ ${r.dishName}` : r.tag}
           </span>
           <span className="absolute top-3 right-3 bg-card text-secondary text-xs font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1 shadow-soft">
             <Star size={12} className="fill-primary text-primary" /> {r.rating}
