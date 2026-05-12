@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2, UserPlus } from "lucide-react";
 import { findRestaurant } from "@/data/restaurants";
 import { useApp } from "@/state/AppState";
 import { SaveSheet } from "@/components/SaveSheet";
+import { ShareSheet } from "@/components/ShareSheet";
+import { InviteSheet } from "@/components/InviteSheet";
 import { Button } from "@/components/ui/button";
 
 const menu = [
@@ -24,6 +26,8 @@ const RestaurantDetails = () => {
   const r = findRestaurant(id);
   const { lists } = useApp();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const inAnyList = lists.some((l) => l.items.includes(r.id));
 
   return (
@@ -37,7 +41,7 @@ const RestaurantDetails = () => {
           <ArrowLeft size={18} />
         </Link>
         <div className="absolute top-6 right-5 flex gap-2">
-          <button className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press"><Share2 size={16} /></button>
+          <button onClick={() => setShareOpen(true)} className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press"><Share2 size={16} /></button>
           <button onClick={() => setSheetOpen(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center press shadow-glow"><Heart size={16} className={inAnyList ? "fill-current" : ""} /></button>
         </div>
         <div className="absolute bottom-4 left-5 right-5 text-primary-foreground">
