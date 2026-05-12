@@ -132,9 +132,14 @@ const RestaurantDetails = () => {
             Reserve a table
           </Button>
         </Link>
+        <button onClick={() => setInviteOpen(true)} className="w-full h-12 rounded-full bg-card text-secondary font-bold text-sm inline-flex items-center justify-center gap-2 press">
+          <UserPlus size={16} className="text-primary" /> Invite friends to this spot
+        </button>
       </div>
     </div>
     {sheetOpen && <SaveSheet restaurantId={r.id} onClose={() => setSheetOpen(false)} />}
+    {shareOpen && <ShareSheet restaurantId={r.id} onClose={() => setShareOpen(false)} />}
+    {inviteOpen && <InviteSheet restaurantId={r.id} onClose={() => setInviteOpen(false)} />}
     </>
   );
 };
