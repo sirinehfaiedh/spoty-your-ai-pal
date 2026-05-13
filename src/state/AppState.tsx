@@ -33,7 +33,8 @@ export type Memory = {
   lastVisited: string[];
   defaultPeople: number;
   prefersSeating: "indoor" | "outdoor";
-  dietary: string[]; // vegan, vegetarian, gluten-free, lactose-free, halal
+  dietary: string[]; // vegan, vegetarian, pescatarian, gluten-free, lactose-free, halal, no-preference
+  transport: "car" | "motorbike" | "transit" | "foot" | "other";
 };
 
 export type PlanType = "date" | "friends" | "work" | "family";
@@ -126,6 +127,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     defaultPeople: 2,
     prefersSeating: "indoor",
     dietary: ["halal"],
+    transport: "car",
   });
 
   const [meetings] = useState<Meeting[]>([
