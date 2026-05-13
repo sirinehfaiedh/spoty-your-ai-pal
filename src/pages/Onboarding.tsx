@@ -398,6 +398,15 @@ const BUDGETS = [
   { range: "65dt+", label: "Fine dining", emoji: "✨" },
 ];
 
+const DIETS = [
+  { id: "no-preference", label: "No preference", icon: Sparkles },
+  { id: "vegan", label: "Vegan", icon: Leaf },
+  { id: "vegetarian", label: "Vegetarian", icon: Leaf },
+  { id: "pescatarian", label: "Pescatarian", icon: Fish },
+  { id: "halal", label: "Halal", icon: Utensils },
+  { id: "gluten-free", label: "Gluten-free", icon: WheatOff },
+];
+
 const capital = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export default Onboarding;
