@@ -108,11 +108,47 @@ const Saved = () => {
         </div>
       </section>
 
-      <h2 className="px-6 mt-7 mb-3 font-display text-xl font-bold text-secondary">Your favorites</h2>
-      <section className="px-6 space-y-4">
-        {items.length === 0 ? (
-          <p className="text-sm text-secondary/60">No favorites yet — tap the heart on any place.</p>
-        ) : items.map((r) => <RestaurantCard key={r.id} r={r} />)}
+      {/* Grouped by collections */}
+      <h2 className="px-6 mt-7 mb-3 font-display text-xl font-bold text-secondary">Your collections</h2>
+      <section className="space-y-6">
+        {lists.filter((l) => l.items.length > 0).map((l) => {
+          const items = restaurants.filter((r) => l.items.includes(r.id));
+          return (
+            <div key={l.id}>
+              <div className="px-6 flex items-center justify-between mb-3">
+                <div className="inline-flex items-center gap-2">
+                  <span className="w-9 h-9 rounded-2xl bg-highlight/40 flex items-center justify-center text-lg">{l.emoji}</span>
+                  <div>
+                    <p className="font-display text-base font-bold text-secondary leading-tight">{l.name}</p>
+                    <p className="text-[10px] text-secondary/60 font-semibold">{items.length} place{items.length > 1 ? "s" : ""}{l.shared ? " · shared" : ""}</p>
+                  </div>
+                </div>
+                <Link to={`/lists/${l.id}`} className="text-[11px] font-bold text-primary press">Open →</Link>
+              </div>
+              <div className="px-6 space-y-4">
+                {items.map((r) => <RestaurantCard key={r.id} r={r} compact />)}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Loose favorites (in saved but not in any list) */}
+        {(() => {
+          const loose = items.filter((r) => !lists.some((l) => l.items.includes(r.id)));
+          if (loose.length === 0) return null;
+          return (
+            <div>
+              <h3 className="px-6 font-display text-base font-bold text-secondary mb-3">Other favorites</h3>
+              <div className="px-6 space-y-4">
+                {loose.map((r) => <RestaurantCard key={r.id} r={r} compact />)}
+              </div>
+            </div>
+          );
+        })()}
+
+        {items.length === 0 && lists.every((l) => l.items.length === 0) && (
+          <p className="px-6 text-sm text-secondary/60">No favorites yet — tap the bookmark on any place.</p>
+        )}
       </section>
 
       <div className="mt-8" />
