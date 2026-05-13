@@ -315,9 +315,11 @@ const Onboarding = () => {
             <Title eyebrow="All set" title="Here's your Spoty" sub="You can change anything later from Profile." />
             <div className="mt-6 space-y-3">
               <Row label="Lifestyle" value={lifestyle ? capital(lifestyle) : "—"} tone="yellow" />
+              <Row label="Transport" value={transport ? capital(transport) : "—"} tone="orange" />
               {hasSchedule && <Row label="Break time" value={breakTime} tone="green" />}
               <Row label="Location" value={location} tone="beige" />
               <Row label="Budget" value={budgetLabel} tone="orange" />
+              <Row label="Dietary" value={dietary.length ? dietary.join(" · ") : "No preference"} tone="green" />
               <Row label="Constraints" value={constraints.length ? constraints.join(" · ") : "None"} tone="green" />
             </div>
           </>
