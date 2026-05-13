@@ -85,6 +85,7 @@ type AppCtx = {
 
   memory: Memory;
   pushMood: (m: string) => void;
+  updateMemory: (patch: Partial<Memory>) => void;
 
   meetings: Meeting[];
   level: { name: string; xp: number; nextXp: number; tier: string };
@@ -203,6 +204,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       toggleSaved: (id) => setSaved((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])),
       memory,
       pushMood: (m) => setMemory((p) => ({ ...p, recentMoods: [m, ...p.recentMoods].slice(0, 5) })),
+      updateMemory: (patch) => setMemory((p) => ({ ...p, ...patch })),
       meetings,
       level: { name: "Connoisseur", xp: 720, nextXp: 1000, tier: "III" },
       streakDays: 4,
