@@ -9,6 +9,14 @@ import dDinner from "@/assets/dish-dinner.jpg";
 import dNight from "@/assets/dish-night.jpg";
 
 export type MealCategory = "breakfast" | "lunch" | "dinner" | "night";
+export type Transport = "car" | "motorbike" | "transit" | "foot" | "other";
+
+export type MenuItem = {
+  name: string;
+  desc: string;
+  price: string;
+  tags: string[]; // vegan, vegetarian, halal, gluten-free, etc.
+};
 
 export type Restaurant = {
   id: string;
@@ -17,7 +25,7 @@ export type Restaurant = {
   dishImage: string;
   dishName: string;
   mealCategory: MealCategory;
-  diet: string[]; // vegan, vegetarian, gluten-free, lactose-free, halal
+  diet: string[];
   walk: string;
   drive: string;
   wait: string;
@@ -34,6 +42,9 @@ export type Restaurant = {
   crowd: "Empty" | "Calm" | "Lively" | "Packed";
   weatherFit: string;
   moodTags: string[];
+  contextLabel: string; // e.g. "Good for quick lunch"
+  distanceKm: number;
+  dailyMenu?: MenuItem[];
 };
 
 export const restaurants: Restaurant[] = [
