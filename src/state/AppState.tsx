@@ -33,7 +33,8 @@ export type Memory = {
   lastVisited: string[];
   defaultPeople: number;
   prefersSeating: "indoor" | "outdoor";
-  dietary: string[]; // vegan, vegetarian, gluten-free, lactose-free, halal
+  dietary: string[]; // vegan, vegetarian, pescatarian, gluten-free, lactose-free, halal, no-preference
+  transport: "car" | "motorbike" | "transit" | "foot" | "other";
 };
 
 export type PlanType = "date" | "friends" | "work" | "family";
@@ -84,6 +85,7 @@ type AppCtx = {
 
   memory: Memory;
   pushMood: (m: string) => void;
+  updateMemory: (patch: Partial<Memory>) => void;
 
   meetings: Meeting[];
   level: { name: string; xp: number; nextXp: number; tier: string };
@@ -126,6 +128,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     defaultPeople: 2,
     prefersSeating: "indoor",
     dietary: ["halal"],
+    transport: "car",
   });
 
   const [meetings] = useState<Meeting[]>([
@@ -201,6 +204,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       toggleSaved: (id) => setSaved((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])),
       memory,
       pushMood: (m) => setMemory((p) => ({ ...p, recentMoods: [m, ...p.recentMoods].slice(0, 5) })),
+      updateMemory: (patch) => setMemory((p) => ({ ...p, ...patch })),
       meetings,
       level: { name: "Connoisseur", xp: 720, nextXp: 1000, tier: "III" },
       streakDays: 4,

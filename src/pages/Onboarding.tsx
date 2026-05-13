@@ -1,46 +1,68 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check, Car, Bike, Bus, Footprints, Leaf, Fish } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useApp } from "@/state/AppState";
 
 type Lifestyle = "worker" | "student" | "other";
 type Constraint = string;
+type Transport = "car" | "motorbike" | "transit" | "foot" | "other";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { updateMemory } = useApp();
   const [step, setStep] = useState(0);
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
+  const [transport, setTransport] = useState<Transport | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
   const [location, setLocation] = useState("");
   const [locationMode, setLocationMode] = useState<"choose" | "auto" | "manual">("choose");
   const [detecting, setDetecting] = useState(false);
   const [budget, setBudget] = useState<string>("10dt – 35dt");
+  const [dietary, setDietary] = useState<string[]>([]);
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
   const hasSchedule = lifestyle === "worker" || lifestyle === "student";
   const steps = useMemo(
-    () => (hasSchedule ? ["lifestyle", "schedule", "location", "budget", "constraints", "summary"] : ["lifestyle", "location", "budget", "constraints", "summary"]),
+    () => (hasSchedule
+      ? ["lifestyle", "transport", "schedule", "location", "budget", "dietary", "constraints", "summary"]
+      : ["lifestyle", "transport", "location", "budget", "dietary", "constraints", "summary"]),
     [hasSchedule]
   );
   const total = steps.length;
   const current = steps[step];
 
   const next = () => {
-    if (step < total - 1) setStep(step + 1);
-    else navigate("/home");
+    if (step < total - 1) {
+      setStep(step + 1);
+    } else {
+      updateMemory({
+        dietary: dietary.length ? dietary : ["no-preference"],
+        transport: transport ?? "car",
+      });
+      navigate("/home");
+    }
   };
   const back = () => (step === 0 ? navigate("/") : setStep(step - 1));
 
   const toggleConstraint = (c: Constraint) =>
     setConstraints((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
+  const toggleDiet = (d: string) =>
+    setDietary((prev) => {
+      if (d === "no-preference") return prev.includes(d) ? [] : ["no-preference"];
+      const cleaned = prev.filter((x) => x !== "no-preference");
+      return cleaned.includes(d) ? cleaned.filter((x) => x !== d) : [...cleaned, d];
+    });
 
   const canNext =
     (current === "lifestyle" && !!lifestyle) ||
+    (current === "transport" && !!transport) ||
     (current === "schedule" && !!breakTime) ||
     (current === "location" && locationMode !== "choose" && !detecting && location.length > 2) ||
     current === "budget" ||
+    current === "dietary" ||
     current === "constraints" ||
     current === "summary";
 
@@ -71,6 +93,40 @@ const Onboarding = () => {
               <ChoiceTile icon={GraduationCap} label="Student" emoji="🎓" active={lifestyle === "student"} onClick={() => setLifestyle("student")} />
               <ChoiceTile icon={UserIcon} label="Other" emoji="👤" active={lifestyle === "other"} onClick={() => setLifestyle("other")} />
             </div>
+          </>
+        )}
+
+        {current === "transport" && (
+          <>
+            <Title eyebrow="Getting around" title="How do you usually move?" sub="We'll show realistic time-to-spot on every card." />
+            <div className="mt-8 space-y-3">
+              <ChoiceTile icon={Car} label="Car" emoji="🚗" active={transport === "car"} onClick={() => setTransport("car")} />
+              <ChoiceTile icon={Bike} label="Motorbike / scooter" emoji="🛵" active={transport === "motorbike"} onClick={() => setTransport("motorbike")} />
+              <ChoiceTile icon={Bus} label="Public transport" emoji="🚌" active={transport === "transit"} onClick={() => setTransport("transit")} />
+              <ChoiceTile icon={Footprints} label="On foot" emoji="🚶" active={transport === "foot"} onClick={() => setTransport("foot")} />
+              <ChoiceTile icon={UserIcon} label="Other" emoji="✨" active={transport === "other"} onClick={() => setTransport("other")} />
+            </div>
+          </>
+        )}
+
+        {current === "dietary" && (
+          <>
+            <Title eyebrow="Dietary" title="Any food preferences?" sub="We'll prioritize plates & menus that match." />
+            <div className="mt-6 flex flex-wrap gap-2">
+              {DIETS.map(({ id, label, icon: Icon }) => {
+                const active = dietary.includes(id);
+                return (
+                  <button
+                    key={id}
+                    onClick={() => toggleDiet(id)}
+                    className={cn("chip press", active && "chip-active")}
+                  >
+                    <Icon size={14} /> {label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-xs text-secondary/60">You can pick several. Change anytime in Profile.</p>
           </>
         )}
 
@@ -259,9 +315,11 @@ const Onboarding = () => {
             <Title eyebrow="All set" title="Here's your Spoty" sub="You can change anything later from Profile." />
             <div className="mt-6 space-y-3">
               <Row label="Lifestyle" value={lifestyle ? capital(lifestyle) : "—"} tone="yellow" />
+              <Row label="Transport" value={transport ? capital(transport) : "—"} tone="orange" />
               {hasSchedule && <Row label="Break time" value={breakTime} tone="green" />}
               <Row label="Location" value={location} tone="beige" />
               <Row label="Budget" value={budgetLabel} tone="orange" />
+              <Row label="Dietary" value={dietary.length ? dietary.join(" · ") : "No preference"} tone="green" />
               <Row label="Constraints" value={constraints.length ? constraints.join(" · ") : "None"} tone="green" />
             </div>
           </>
@@ -340,6 +398,15 @@ const BUDGETS = [
   { range: "10dt – 35dt", label: "Everyday", emoji: "🍽️" },
   { range: "35dt – 65dt", label: "Treat yourself", emoji: "🍷" },
   { range: "65dt+", label: "Fine dining", emoji: "✨" },
+];
+
+const DIETS = [
+  { id: "no-preference", label: "No preference", icon: Sparkles },
+  { id: "vegan", label: "Vegan", icon: Leaf },
+  { id: "vegetarian", label: "Vegetarian", icon: Leaf },
+  { id: "pescatarian", label: "Pescatarian", icon: Fish },
+  { id: "halal", label: "Halal", icon: Utensils },
+  { id: "gluten-free", label: "Gluten-free", icon: WheatOff },
 ];
 
 const capital = (s: string) => s[0].toUpperCase() + s.slice(1);

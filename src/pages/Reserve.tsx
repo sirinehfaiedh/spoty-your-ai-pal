@@ -20,6 +20,7 @@ const Reserve = () => {
   const [people, setPeople] = useState<number>(memory.defaultPeople);
   const [time, setTime] = useState<string>("13:00");
   const [seating, setSeating] = useState<"indoor" | "outdoor">(memory.prefersSeating);
+  const [note, setNote] = useState<string>("");
 
   const [listening, setListening] = useState(false);
   const [voiceText, setVoiceText] = useState<string | null>(null);
@@ -206,6 +207,17 @@ const Reserve = () => {
                 hint={memory.prefersSeating === "outdoor" ? "Your preference" : "Terrace"}
               />
             </div>
+          </Section>
+
+          {/* Free-text message */}
+          <Section icon={Sparkles} label="Message to restaurant (optional)">
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Allergies, special request, occasion…"
+              rows={3}
+              className="w-full rounded-2xl bg-card p-3 text-sm text-secondary placeholder:text-secondary/40 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+            />
           </Section>
 
           <div className="flex-1" />

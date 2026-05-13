@@ -89,8 +89,20 @@ const Home = () => {
 
 const QuickMode = ({ topPick, picks, memory, ctx, dietActive }: any) => (
   <>
+    {/* Ask Spoty — top entry point */}
+    <Link to="/chat" className="mx-6 mt-2 rounded-2xl bg-primary text-primary-foreground p-4 flex items-center gap-3 press shadow-glow animate-fade-in">
+      <div className="w-11 h-11 rounded-2xl bg-primary-foreground/15 flex items-center justify-center">
+        <MessageSquare size={20} />
+      </div>
+      <div className="flex-1">
+        <p className="font-bold text-sm">Ask Spoty anything</p>
+        <p className="text-xs opacity-85">"Find me a quiet café for 2 hours…"</p>
+      </div>
+      <Sparkles size={16} />
+    </Link>
+
     {/* Contextual eyebrow */}
-    <div className="mx-6 mt-2 flex items-center gap-2">
+    <div className="mx-6 mt-3 flex items-center gap-2">
       <span className="inline-flex items-center gap-1.5 bg-card text-secondary text-[11px] font-bold px-3 py-1.5 rounded-full shadow-soft">
         <span>{ctx.emoji}</span> {ctx.eyebrow}
       </span>
@@ -101,53 +113,38 @@ const QuickMode = ({ topPick, picks, memory, ctx, dietActive }: any) => (
       )}
     </div>
 
-    {/* Hero AI suggestion — Food first in Quick mode */}
+    {/* Hero AI suggestion — Plate first */}
     <Link to={`/restaurant/${topPick.id}`} className="mx-6 mt-3 rounded-[2rem] overflow-hidden shadow-glow press animate-slide-up block ring-2 ring-primary">
       <div className="relative h-56">
         <img src={topPick.dishImage} alt={topPick.dishName} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/85 via-secondary/25 to-transparent" />
         <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1.5 rounded-full shadow-glow">
-          <Sparkles size={11} strokeWidth={3} /> {ctx.title}
+          <Sparkles size={11} strokeWidth={3} /> {topPick.contextLabel}
         </div>
         <div className="absolute top-3 right-3 bg-card text-secondary text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
           <Zap size={11} className="text-primary" /> {topPick.affinity}% match
         </div>
         <div className="absolute bottom-3 left-4 right-4 text-primary-foreground">
-          <p className="text-[11px] uppercase tracking-wider opacity-90 font-bold">🍽️ {topPick.dishName}</p>
-          <h2 className="font-display text-2xl font-bold leading-tight mt-0.5">{topPick.name}</h2>
-          <p className="text-xs opacity-90 mt-0.5">{topPick.ambiance} · {topPick.drive} drive · {topPick.budget}</p>
+          <h2 className="font-display text-2xl font-bold leading-tight">🍽️ {topPick.dishName}</h2>
+          <p className="text-xs opacity-90 mt-0.5">at {topPick.name} · {topPick.ambiance} · {topPick.budget}</p>
         </div>
       </div>
       <div className="p-3 bg-card flex gap-2">
         <Link
           to={`/reserve/${topPick.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="flex-1 h-11 rounded-full bg-primary text-primary-foreground text-sm font-bold press shadow-glow inline-flex items-center justify-center"
-        >Reserve</Link>
+          className="flex-1 h-12 rounded-full bg-primary text-primary-foreground text-sm font-bold press shadow-glow inline-flex items-center justify-center gap-1.5"
+        ><Sparkles size={14} /> Reserve this dish</Link>
         <button
-          onClick={(e) => { e.preventDefault(); }}
-          className="flex-1 h-11 rounded-full bg-info text-secondary text-sm font-bold press inline-flex items-center justify-center gap-1.5"
-        ><MapPin size={14} /> Navigate</button>
+          onClick={(e) => {
+            e.preventDefault();
+            const q = encodeURIComponent(`${topPick.name} ${topPick.address}`);
+            window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+          }}
+          aria-label="Navigate"
+          className="w-12 h-12 rounded-full bg-info text-secondary press inline-flex items-center justify-center"
+        ><MapPin size={16} className="text-primary" /></button>
       </div>
-    </Link>
-
-    {/* Memory insight */}
-    <div className="mx-6 mt-4 rounded-2xl bg-info p-4 flex gap-3 animate-fade-in">
-      <Coffee size={20} className="text-secondary shrink-0 mt-0.5" />
-      <div className="flex-1">
-        <p className="text-xs font-bold uppercase tracking-wider text-secondary/70">Spoty remembers</p>
-        <p className="text-sm text-secondary mt-0.5"><b>{memory.morningHabit}</b> — same spot ready when you walk in.</p>
-      </div>
-    </div>
-
-    {/* Conversational entry */}
-    <Link to="/chat" className="mx-6 mt-3 rounded-2xl bg-accent/40 p-4 flex items-center gap-3 press">
-      <MessageSquare size={20} className="text-secondary" />
-      <div className="flex-1">
-        <p className="font-bold text-secondary text-sm">Ask Spoty anything</p>
-        <p className="text-xs text-secondary/70">"Find me a quiet café for 2 hours…"</p>
-      </div>
-      <Sparkles size={14} className="text-primary" />
     </Link>
 
     {/* Other top matches */}

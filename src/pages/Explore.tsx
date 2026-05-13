@@ -1,28 +1,46 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, Maximize2 } from "lucide-react";
-import { restaurants } from "@/data/restaurants";
+import { Search, MapPin, Maximize2, Sparkles, MessageSquare } from "lucide-react";
+import { restaurants, filterByCategory } from "@/data/restaurants";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TabBar } from "@/components/TabBar";
 import { cn } from "@/lib/utils";
+import { useApp } from "@/state/AppState";
 
-const categories = ["Cheap eats", "Romantic", "Work-friendly", "Family", "Authentic", "Quick"];
+const categories = ["Cheap eats", "Romantic", "Work-friendly", "Family", "Authentic", "Quick", "Friendly", "Games"];
 
 const Explore = () => {
+  const { memory } = useApp();
   const [active, setActive] = useState("Cheap eats");
+  const filtered = useMemo(() => {
+    let list = filterByCategory(restaurants, active);
+    if (memory.dietary.length && !memory.dietary.includes("no-preference")) {
+      const matched = list.filter((r) => memory.dietary.some((d) => r.diet.includes(d)));
+      if (matched.length) list = matched;
+    }
+    return list.length ? list : restaurants;
+  }, [active, memory.dietary]);
+
   return (
     <div className="phone-frame flex flex-col pb-2">
-      <header className="px-6 pt-8 pb-4">
+      <header className="px-6 pt-8 pb-3">
         <h1 className="font-display text-3xl font-semibold">Explore</h1>
         <p className="text-muted-foreground text-sm mt-1">Curated for your taste and location.</p>
 
-        <div className="mt-5 flex items-center gap-3 bg-card rounded-2xl px-4 h-12 shadow-soft">
-          <Search size={18} className="text-muted-foreground" />
+        {/* Ask Spoty — top */}
+        <Link to="/chat" className="mt-4 flex items-center gap-3 bg-primary text-primary-foreground rounded-2xl px-4 h-12 shadow-glow press">
+          <MessageSquare size={16} />
+          <span className="text-sm font-bold flex-1">Ask Spoty anything</span>
+          <Sparkles size={14} />
+        </Link>
+
+        <div className="mt-3 flex items-center gap-3 bg-card rounded-2xl px-4 h-11 shadow-soft">
+          <Search size={16} className="text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Try: "quiet place under 30dt"</span>
         </div>
       </header>
 
-      {/* Map preview — tap to open full map */}
+      {/* Map preview */}
       <Link to="/map" className="mx-6 rounded-[1.75rem] overflow-hidden bg-accent/30 h-32 relative shadow-soft press block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,hsl(var(--highlight)/0.5),transparent_60%),radial-gradient(circle_at_70%_70%,hsl(var(--primary)/0.3),transparent_60%)]" />
         <div className="absolute inset-0 grid grid-cols-8 grid-rows-4">
@@ -54,10 +72,41 @@ const Explore = () => {
         ))}
       </div>
 
-      {/* List */}
-      <section className="mt-5 px-6 space-y-4">
-        {restaurants.map((r) => (
-          <RestaurantCard key={r.id} r={r} />
+      {/* Filter result count */}
+      <p className="px-6 mt-3 text-[11px] font-bold uppercase tracking-wider text-secondary/60">
+        {filtered.length} spot{filtered.length > 1 ? "s" : ""} · {active}
+      </p>
+
+      {/* List of spots with daily menu carousel */}
+      <section key={active} className="mt-3 px-6 space-y-6 animate-fade-in">
+        {filtered.map((r) => (
+          <div key={r.id} className="space-y-3">
+            <RestaurantCard r={r} />
+            {r.dailyMenu && r.dailyMenu.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-secondary/60">Today's menu</p>
+                  <Link to={`/restaurant/${r.id}`} className="text-[11px] font-bold text-primary press">See all →</Link>
+                </div>
+                <div className="flex gap-2.5 overflow-x-auto no-scrollbar -mx-6 px-6 pb-1">
+                  {r.dailyMenu.map((m) => (
+                    <div key={m.name} className="shrink-0 w-44 rounded-2xl bg-card p-3 shadow-soft">
+                      <p className="font-bold text-secondary text-sm leading-tight">{m.name}</p>
+                      <p className="text-[10px] text-secondary/60 mt-0.5 line-clamp-2">{m.desc}</p>
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-xs font-bold text-primary">{m.price}</span>
+                        <div className="flex gap-1">
+                          {m.tags.slice(0, 2).map((t) => (
+                            <span key={t} className="text-[9px] font-bold uppercase bg-accent/40 text-secondary px-1.5 py-0.5 rounded-full">{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </section>
 

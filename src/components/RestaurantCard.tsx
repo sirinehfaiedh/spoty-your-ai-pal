@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Footprints, Clock, Headphones, Car, Wallet, Star, Accessibility, Sparkles, Timer, Heart } from "lucide-react";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Clock, Headphones, Wallet, Star, Sparkles, Bookmark, Navigation } from "lucide-react";
 import type { Restaurant } from "@/data/restaurants";
+import { timeForTransport } from "@/data/restaurants";
 import { useApp } from "@/state/AppState";
 import { cn } from "@/lib/utils";
 import { SaveSheet } from "@/components/SaveSheet";
@@ -14,83 +15,117 @@ const toneMap: Record<Restaurant["tone"], string> = {
 };
 
 export const RestaurantCard = ({ r, compact = false }: { r: Restaurant; compact?: boolean }) => {
-  const { mode, lists } = useApp();
+  const { mode, lists, memory, saved, toggleSaved } = useApp();
+  const navigate = useNavigate();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const userHasCar = true;
-  const isInAnyList = lists.some((l) => l.items.includes(r.id));
+  const [pulseSaved, setPulseSaved] = useState(false);
+  const lastTap = useRef(0);
+
+  const isSaved = saved.includes(r.id) || lists.some((l) => l.items.includes(r.id));
+  const tt = timeForTransport(r, memory.transport);
+
+  const triggerSave = () => {
+    if (!isSaved) toggleSaved(r.id);
+    setPulseSaved(true);
+    setTimeout(() => setPulseSaved(false), 400);
+    setSheetOpen(true);
+  };
+
+  const onCardClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      e.preventDefault();
+      triggerSave();
+      lastTap.current = 0;
+      return;
+    }
+    lastTap.current = now;
+  };
+
+  const openMaps = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const q = encodeURIComponent(`${r.name} ${r.address}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+  };
 
   return (
     <>
-      <Link to={`/restaurant/${r.id}`} className="block press animate-fade-in">
-        <div className={cn("relative w-full overflow-hidden rounded-[1.75rem] shadow-card", compact ? "h-44" : "h-56")}>
+      <Link to={`/restaurant/${r.id}`} onClick={onCardClick} className="block press animate-fade-in select-none">
+        <div className={cn("relative w-full overflow-hidden rounded-[1.75rem] shadow-card", compact ? "h-44" : "h-52")}>
           <img
             src={mode === "quick" ? r.dishImage : r.image}
             alt={mode === "quick" ? `${r.dishName} at ${r.name}` : `${r.name} — ${r.cuisine}`}
             loading="lazy"
-            width={768}
-            height={512}
             className="h-full w-full object-cover"
           />
-          {mode === "quick" && (
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-secondary/80 to-transparent" />
-          )}
-          <span className={cn("absolute top-3 left-3 text-secondary text-xs font-bold px-3 py-1.5 rounded-full", toneMap[r.tone])}>
-            {mode === "quick" ? `🍽️ ${r.dishName}` : r.tag}
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary/70 via-transparent to-transparent" />
+
+          <span className={cn("absolute top-3 left-3 text-secondary text-[11px] font-bold px-3 py-1.5 rounded-full", toneMap[r.tone])}>
+            {r.contextLabel}
           </span>
           <span className="absolute top-3 right-3 bg-card text-secondary text-xs font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1 shadow-soft">
             <Star size={12} className="fill-primary text-primary" /> {r.rating}
           </span>
 
-          {/* Save heart */}
+          {/* Bookmark save */}
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSheetOpen(true); }}
-            className="absolute top-14 right-3 w-9 h-9 rounded-full bg-background/95 flex items-center justify-center shadow-soft press"
-            aria-label="Save"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); triggerSave(); }}
+            className={cn(
+              "absolute top-14 right-3 w-9 h-9 rounded-full bg-background/95 flex items-center justify-center shadow-soft press transition-transform",
+              pulseSaved && "scale-125"
+            )}
+            aria-label={isSaved ? "Saved" : "Save"}
           >
-            <Heart size={15} className={cn(isInAnyList ? "fill-primary text-primary" : "text-secondary")} />
+            <Bookmark size={15} className={cn(isSaved ? "fill-primary text-primary" : "text-secondary")} />
           </button>
 
           <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground text-[11px] font-bold px-2.5 py-1.5 rounded-full inline-flex items-center gap-1 shadow-glow">
             <Sparkles size={11} /> {r.affinity}% match
           </div>
-
-          <div className="absolute bottom-3 left-3 bg-card/90 backdrop-blur text-secondary text-[10px] font-bold px-2 py-1 rounded-full inline-flex items-center gap-1 shadow-soft">
-            <span className={cn(
-              "w-1.5 h-1.5 rounded-full",
-              r.crowd === "Empty" && "bg-accent",
-              r.crowd === "Calm" && "bg-accent",
-              r.crowd === "Lively" && "bg-highlight",
-              r.crowd === "Packed" && "bg-primary",
-            )} />
-            {r.crowd}
-          </div>
         </div>
 
-        <div className="pt-4 px-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-display text-xl font-bold text-secondary leading-tight truncate">{r.name}</h3>
-              <p className="text-xs text-secondary/70 mt-0.5 truncate">{r.cuisine} · {r.address} · {r.weatherFit}</p>
-            </div>
+        <div className="pt-3 px-1">
+          {/* Plate first, restaurant second */}
+          <h3 className="font-display text-xl font-bold text-secondary leading-tight truncate">
+            {r.dishName}
+          </h3>
+          <p className="text-xs text-secondary/60 mt-0.5 truncate">
+            at <span className="font-semibold text-secondary/80">{r.name}</span> · {r.cuisine}
+          </p>
+
+          {/* Info row */}
+          <div className="mt-2 flex items-center gap-3 text-[11px] text-secondary/70 font-semibold">
+            <span className="inline-flex items-center gap-1"><Navigation size={11} className="text-primary" /> {tt.label}</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1"><Clock size={11} /> {r.wait}</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1"><Wallet size={11} /> {r.budget.split(" ")[0]}+</span>
           </div>
 
-          <div className="mt-3 grid grid-cols-4 gap-1.5">
-            <DataPill icon={userHasCar ? Timer : Footprints} label={userHasCar ? r.drive : r.walk} sub={userHasCar ? "Drive" : "Walk"} />
-            <DataPill icon={Clock} label={r.wait} sub="Wait" />
-            <DataPill icon={Headphones} label={r.ambiance} sub="Vibe" />
-            <DataPill icon={Wallet} label={r.budget.split(" ")[0]} sub="From" />
+          {/* CTA row — large reserve + icon-only nav */}
+          <div className="mt-3 flex items-center gap-2">
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/reserve/${r.id}`); }}
+              className="flex-1 h-12 rounded-full bg-primary text-primary-foreground font-bold text-sm press shadow-glow inline-flex items-center justify-center gap-1.5"
+            >
+              <Sparkles size={14} /> Reserve {mode === "quick" ? "this dish" : "a table"}
+            </button>
+            <button
+              onClick={openMaps}
+              aria-label="Navigate"
+              className="w-12 h-12 rounded-full bg-card text-secondary press shadow-soft inline-flex items-center justify-center"
+            >
+              <Navigation size={16} className="text-primary" />
+            </button>
           </div>
 
           {!compact && (
-            <div className="mt-1.5 flex gap-1.5 flex-wrap">
-              <ServiceChip icon={Car} label="Parking" active={r.parking} />
-              <ServiceChip icon={Accessibility} label="Accessible" active={r.wheelchair} />
-              {mode === "quick" && (
-                <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
-                  ⚡ One-tap reserve
-                </span>
-              )}
+            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-secondary/60">
+              <Headphones size={10} /> {r.ambiance}
+              <span>·</span>
+              <span>{r.weatherFit}</span>
             </div>
           )}
         </div>
@@ -99,20 +134,3 @@ export const RestaurantCard = ({ r, compact = false }: { r: Restaurant; compact?
     </>
   );
 };
-
-const DataPill = ({ icon: Icon, label, sub }: { icon: any; label: string; sub: string }) => (
-  <div className="flex flex-col items-center gap-0.5 rounded-2xl bg-card py-2 px-1 shadow-soft">
-    <Icon size={14} className="text-primary" strokeWidth={2.4} />
-    <span className="font-bold text-secondary text-[10px] text-center leading-tight truncate max-w-full px-1">{label}</span>
-    <span className="text-[8px] text-secondary/60 uppercase tracking-wider">{sub}</span>
-  </div>
-);
-
-const ServiceChip = ({ icon: Icon, label, active }: { icon: any; label: string; active: boolean }) => (
-  <span className={cn(
-    "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold",
-    active ? "bg-accent/40 text-secondary" : "bg-muted text-secondary/40 line-through"
-  )}>
-    <Icon size={11} /> {label}
-  </span>
-);

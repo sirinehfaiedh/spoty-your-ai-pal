@@ -1,20 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, Share2, Star, Car, Baby, ArrowUpDown, Footprints, Clock, Headphones, Wallet, MapPin, CheckCircle2, UserPlus } from "lucide-react";
-import { findRestaurant } from "@/data/restaurants";
+import { ArrowLeft, Bookmark, Share2, Star, Car, Baby, ArrowUpDown, Clock, Headphones, Wallet, MapPin, CheckCircle2, UserPlus, Navigation, Sparkles } from "lucide-react";
+import { findRestaurant, timeForTransport } from "@/data/restaurants";
 import { useApp } from "@/state/AppState";
 import { SaveSheet } from "@/components/SaveSheet";
 import { ShareSheet } from "@/components/ShareSheet";
 import { InviteSheet } from "@/components/InviteSheet";
 import { Button } from "@/components/ui/button";
-
-const menu = [
-  { name: "Grilled Daurade", desc: "Line-caught sea bream, lemon confit, herbs", price: "28 dt" },
-  { name: "Ojja Merguez", desc: "Spicy tomato stew, eggs, hand-rolled merguez", price: "18 dt" },
-  { name: "Couscous Royal", desc: "Lamb, chicken, vegetables, semolina", price: "32 dt" },
-  { name: "Brik à l'œuf", desc: "Crispy filo, egg, tuna, capers", price: "9 dt" },
-  { name: "Baklava Maison", desc: "Pistachio, orange blossom syrup", price: "12 dt" },
-];
 
 const reviews = [
   { name: "Amira", rating: 5, text: "Quiet, fast service, perfect for lunch breaks." },
@@ -24,25 +16,56 @@ const reviews = [
 const RestaurantDetails = () => {
   const { id = "" } = useParams();
   const r = findRestaurant(id);
-  const { lists } = useApp();
+  const { lists, saved, toggleSaved, memory } = useApp();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const inAnyList = lists.some((l) => l.items.includes(r.id));
+  const [pulse, setPulse] = useState(false);
+  const lastTap = useRef(0);
+  const inAnyList = saved.includes(r.id) || lists.some((l) => l.items.includes(r.id));
+  const tt = timeForTransport(r, memory.transport);
+
+  const triggerSave = () => {
+    if (!inAnyList) toggleSaved(r.id);
+    setPulse(true);
+    setTimeout(() => setPulse(false), 400);
+    setSheetOpen(true);
+  };
+
+  const onHeroTap = () => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      triggerSave();
+      lastTap.current = 0;
+      return;
+    }
+    lastTap.current = now;
+  };
+
+  const openMaps = () => {
+    const q = encodeURIComponent(`${r.name} ${r.address}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, "_blank");
+  };
 
   return (
     <>
-    <div className="phone-frame flex flex-col pb-8 bg-background">
+    <div className="phone-frame flex flex-col pb-32 bg-background">
       {/* Hero */}
-      <div className="relative h-72 w-full overflow-hidden rounded-b-[2.5rem]">
-        <img src={r.image} alt={r.name} width={768} height={512} className="h-full w-full object-cover" />
+      <div onClick={onHeroTap} className="relative h-72 w-full overflow-hidden rounded-b-[2.5rem] select-none">
+        <img src={r.image} alt={r.name} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/70 via-transparent to-transparent" />
         <Link to="/home" className="absolute top-6 left-5 w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press">
           <ArrowLeft size={18} />
         </Link>
         <div className="absolute top-6 right-5 flex gap-2">
-          <button onClick={() => setShareOpen(true)} className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press"><Share2 size={16} /></button>
-          <button onClick={() => setSheetOpen(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center press shadow-glow"><Heart size={16} className={inAnyList ? "fill-current" : ""} /></button>
+          <button onClick={(e) => { e.stopPropagation(); setShareOpen(true); }} className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center press"><Share2 size={16} /></button>
+          <button
+            onClick={(e) => { e.stopPropagation(); triggerSave(); }}
+            className={`w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center press shadow-glow transition-transform ${pulse ? "scale-125" : ""}`}
+            aria-label={inAnyList ? "Saved" : "Save"}
+          >
+            <Bookmark size={16} className={inAnyList ? "fill-current" : ""} />
+          </button>
         </div>
         <div className="absolute bottom-4 left-5 right-5 text-primary-foreground">
           <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">{r.tag}</span>
@@ -54,13 +77,23 @@ const RestaurantDetails = () => {
             <span className="opacity-80">·</span>
             <span className="inline-flex items-center gap-1 opacity-90"><MapPin size={12} /> {r.address}</span>
           </div>
+          <p className="text-xs opacity-90 mt-1 inline-flex items-center gap-1"><Navigation size={11} /> {tt.label} away</p>
+        </div>
+      </div>
+
+      {/* Availability — moved to TOP */}
+      <div className="px-6 mt-5">
+        <div className="rounded-[1.25rem] bg-accent/40 p-3 flex items-center gap-2">
+          <CheckCircle2 size={18} className="text-secondary" />
+          <span className="text-sm font-bold text-secondary flex-1">Reservation available today</span>
+          <span className="text-[11px] font-bold text-primary">live</span>
         </div>
       </div>
 
       {/* Data grid */}
       <section className="px-6 mt-5 grid grid-cols-5 gap-2">
         {[
-          { icon: Footprints, label: r.walk, sub: "Walk" },
+          { icon: Navigation, label: tt.label.split(" ")[0] + " min", sub: tt.verb },
           { icon: Clock, label: r.wait, sub: "Wait" },
           { icon: Headphones, label: r.ambiance, sub: "Vibe" },
           { icon: Car, label: r.parking ? "Yes" : "No", sub: "Parking" },
@@ -74,11 +107,36 @@ const RestaurantDetails = () => {
         ))}
       </section>
 
-      {/* Menu */}
+      {/* Today's menu */}
+      {r.dailyMenu && r.dailyMenu.length > 0 && (
+        <section className="px-6 mt-8">
+          <h2 className="font-display text-2xl font-semibold mb-3">Today's menu</h2>
+          <div className="space-y-2">
+            {r.dailyMenu.map((m) => (
+              <div key={m.name} className="soft-card bg-card p-4 flex items-start gap-3">
+                <div className="flex-1">
+                  <h4 className="font-semibold">{m.name}</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">{m.desc}</p>
+                  {m.tags.length > 0 && (
+                    <div className="flex gap-1 mt-1.5">
+                      {m.tags.map((t) => (
+                        <span key={t} className="text-[9px] font-bold uppercase bg-accent/40 text-secondary px-1.5 py-0.5 rounded-full">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <span className="font-display font-semibold text-primary">{m.price}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Full menu — same screen */}
       <section className="px-6 mt-8">
-        <h2 className="font-display text-2xl font-semibold mb-3">Menu highlights</h2>
+        <h2 className="font-display text-2xl font-semibold mb-3">Full menu</h2>
         <div className="space-y-2">
-          {menu.map((m) => (
+          {[...(r.dailyMenu || []), { name: "Brik à l'œuf", desc: "Crispy filo, egg, tuna, capers", price: "9 dt", tags: [] }, { name: "Baklava Maison", desc: "Pistachio, orange blossom syrup", price: "12 dt", tags: ["vegetarian"] }].map((m) => (
             <div key={m.name} className="soft-card bg-card p-4 flex items-start gap-3">
               <div className="flex-1">
                 <h4 className="font-semibold">{m.name}</h4>
@@ -102,7 +160,7 @@ const RestaurantDetails = () => {
       </section>
 
       {/* Reviews */}
-      <section className="px-6 mt-8">
+      <section className="px-6 mt-8 mb-4">
         <h2 className="font-display text-2xl font-semibold mb-3">Reviews</h2>
         <div className="space-y-3">
           {reviews.map((rv) => (
@@ -121,22 +179,23 @@ const RestaurantDetails = () => {
         </div>
       </section>
 
-      {/* Availability + CTA */}
-      <div className="px-6 mt-8 sticky bottom-4 space-y-3">
-        <div className="rounded-[1.25rem] bg-accent/40 p-3 flex items-center gap-2">
-          <CheckCircle2 size={18} className="text-secondary" />
-          <span className="text-sm font-bold text-secondary">Reservation available today</span>
-        </div>
-        <Link to={`/reserve/${r.id}`} className="block">
-          <Button size="lg" className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow">
-            Reserve a table
-          </Button>
-        </Link>
-        <button onClick={() => setInviteOpen(true)} className="w-full h-12 rounded-full bg-card text-secondary font-bold text-sm inline-flex items-center justify-center gap-2 press">
-          <UserPlus size={16} className="text-primary" /> Invite friends to this spot
-        </button>
-      </div>
+      <button onClick={() => setInviteOpen(true)} className="mx-6 h-12 rounded-full bg-card text-secondary font-bold text-sm inline-flex items-center justify-center gap-2 press">
+        <UserPlus size={16} className="text-primary" /> Invite friends to this spot
+      </button>
     </div>
+
+    {/* Sticky bottom CTA */}
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-background/95 backdrop-blur border-t border-muted/50 p-4 z-30 flex gap-2">
+      <Link to={`/reserve/${r.id}`} className="flex-1">
+        <Button size="lg" className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-glow">
+          <Sparkles size={16} className="mr-1" /> Reserve a table
+        </Button>
+      </Link>
+      <button onClick={openMaps} aria-label="Navigate" className="w-14 h-14 rounded-full bg-card press inline-flex items-center justify-center shadow-soft">
+        <Navigation size={18} className="text-primary" />
+      </button>
+    </div>
+
     {sheetOpen && <SaveSheet restaurantId={r.id} onClose={() => setSheetOpen(false)} />}
     {shareOpen && <ShareSheet restaurantId={r.id} onClose={() => setShareOpen(false)} />}
     {inviteOpen && <InviteSheet restaurantId={r.id} onClose={() => setInviteOpen(false)} />}
