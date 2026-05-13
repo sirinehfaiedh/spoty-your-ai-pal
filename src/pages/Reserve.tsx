@@ -20,6 +20,7 @@ const Reserve = () => {
   const [people, setPeople] = useState<number>(memory.defaultPeople);
   const [time, setTime] = useState<string>("13:00");
   const [seating, setSeating] = useState<"indoor" | "outdoor">(memory.prefersSeating);
+  const [note, setNote] = useState<string>("");
 
   const [listening, setListening] = useState(false);
   const [voiceText, setVoiceText] = useState<string | null>(null);
