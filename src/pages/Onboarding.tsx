@@ -96,6 +96,40 @@ const Onboarding = () => {
           </>
         )}
 
+        {current === "transport" && (
+          <>
+            <Title eyebrow="Getting around" title="How do you usually move?" sub="We'll show realistic time-to-spot on every card." />
+            <div className="mt-8 space-y-3">
+              <ChoiceTile icon={Car} label="Car" emoji="🚗" active={transport === "car"} onClick={() => setTransport("car")} />
+              <ChoiceTile icon={Bike} label="Motorbike / scooter" emoji="🛵" active={transport === "motorbike"} onClick={() => setTransport("motorbike")} />
+              <ChoiceTile icon={Bus} label="Public transport" emoji="🚌" active={transport === "transit"} onClick={() => setTransport("transit")} />
+              <ChoiceTile icon={Footprints} label="On foot" emoji="🚶" active={transport === "foot"} onClick={() => setTransport("foot")} />
+              <ChoiceTile icon={UserIcon} label="Other" emoji="✨" active={transport === "other"} onClick={() => setTransport("other")} />
+            </div>
+          </>
+        )}
+
+        {current === "dietary" && (
+          <>
+            <Title eyebrow="Dietary" title="Any food preferences?" sub="We'll prioritize plates & menus that match." />
+            <div className="mt-6 flex flex-wrap gap-2">
+              {DIETS.map(({ id, label, icon: Icon }) => {
+                const active = dietary.includes(id);
+                return (
+                  <button
+                    key={id}
+                    onClick={() => toggleDiet(id)}
+                    className={cn("chip press", active && "chip-active")}
+                  >
+                    <Icon size={14} /> {label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-xs text-secondary/60">You can pick several. Change anytime in Profile.</p>
+          </>
+        )}
+
         {current === "schedule" && (
           <>
             <Title eyebrow="Your schedule" title="What time is your break?" sub="Spoty will suggest options you can actually reach." />
