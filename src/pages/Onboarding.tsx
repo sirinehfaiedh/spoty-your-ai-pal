@@ -1,46 +1,68 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Wallet, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, GraduationCap, User as UserIcon, Clock, MapPin, Accessibility, Cake, ArrowUpDown, WheatOff, MilkOff, Heart, Utensils, Baby, Sparkles, Check, Car, Bike, Bus, Footprints, Leaf, Fish } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useApp } from "@/state/AppState";
 
 type Lifestyle = "worker" | "student" | "other";
 type Constraint = string;
+type Transport = "car" | "motorbike" | "transit" | "foot" | "other";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { updateMemory } = useApp();
   const [step, setStep] = useState(0);
   const [lifestyle, setLifestyle] = useState<Lifestyle | null>(null);
+  const [transport, setTransport] = useState<Transport | null>(null);
   const [breakTime, setBreakTime] = useState("12:00");
   const [location, setLocation] = useState("");
   const [locationMode, setLocationMode] = useState<"choose" | "auto" | "manual">("choose");
   const [detecting, setDetecting] = useState(false);
   const [budget, setBudget] = useState<string>("10dt – 35dt");
+  const [dietary, setDietary] = useState<string[]>([]);
   const [constraints, setConstraints] = useState<Constraint[]>([]);
 
   const hasSchedule = lifestyle === "worker" || lifestyle === "student";
   const steps = useMemo(
-    () => (hasSchedule ? ["lifestyle", "schedule", "location", "budget", "constraints", "summary"] : ["lifestyle", "location", "budget", "constraints", "summary"]),
+    () => (hasSchedule
+      ? ["lifestyle", "transport", "schedule", "location", "budget", "dietary", "constraints", "summary"]
+      : ["lifestyle", "transport", "location", "budget", "dietary", "constraints", "summary"]),
     [hasSchedule]
   );
   const total = steps.length;
   const current = steps[step];
 
   const next = () => {
-    if (step < total - 1) setStep(step + 1);
-    else navigate("/home");
+    if (step < total - 1) {
+      setStep(step + 1);
+    } else {
+      updateMemory({
+        dietary: dietary.length ? dietary : ["no-preference"],
+        transport: transport ?? "car",
+      });
+      navigate("/home");
+    }
   };
   const back = () => (step === 0 ? navigate("/") : setStep(step - 1));
 
   const toggleConstraint = (c: Constraint) =>
     setConstraints((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
+  const toggleDiet = (d: string) =>
+    setDietary((prev) => {
+      if (d === "no-preference") return prev.includes(d) ? [] : ["no-preference"];
+      const cleaned = prev.filter((x) => x !== "no-preference");
+      return cleaned.includes(d) ? cleaned.filter((x) => x !== d) : [...cleaned, d];
+    });
 
   const canNext =
     (current === "lifestyle" && !!lifestyle) ||
+    (current === "transport" && !!transport) ||
     (current === "schedule" && !!breakTime) ||
     (current === "location" && locationMode !== "choose" && !detecting && location.length > 2) ||
     current === "budget" ||
+    current === "dietary" ||
     current === "constraints" ||
     current === "summary";
 
