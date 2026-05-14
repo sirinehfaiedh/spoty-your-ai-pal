@@ -90,13 +90,13 @@ const Home = () => {
 const QuickMode = ({ topPick, picks, memory, ctx, dietActive }: any) => (
   <>
     {/* Ask Spoty — top entry point */}
-    <Link to="/chat" className="mx-6 mt-2 rounded-2xl bg-primary text-primary-foreground p-4 flex items-center gap-3 press shadow-glow animate-fade-in">
-      <div className="w-11 h-11 rounded-2xl bg-primary-foreground/15 flex items-center justify-center">
+    <Link to="/chat" className="mx-6 mt-2 rounded-2xl bg-info text-secondary p-4 flex items-center gap-3 press shadow-soft animate-fade-in">
+      <div className="w-11 h-11 rounded-2xl bg-secondary/10 flex items-center justify-center">
         <MessageSquare size={20} />
       </div>
       <div className="flex-1">
         <p className="font-bold text-sm">Ask Spoty anything</p>
-        <p className="text-xs opacity-85">"Find me a quiet café for 2 hours…"</p>
+        <p className="text-xs opacity-70">"Find me a quiet café for 2 hours…"</p>
       </div>
       <Sparkles size={16} />
     </Link>
