@@ -12,14 +12,22 @@ const categories = ["Cheap eats", "Romantic", "Work-friendly", "Family", "Authen
 const Explore = () => {
   const { memory } = useApp();
   const [active, setActive] = useState("Cheap eats");
+  const [query, setQuery] = useState("");
   const filtered = useMemo(() => {
     let list = filterByCategory(restaurants, active);
     if (memory.dietary.length && !memory.dietary.includes("no-preference")) {
       const matched = list.filter((r) => memory.dietary.some((d) => r.diet.includes(d)));
       if (matched.length) list = matched;
     }
-    return list.length ? list : restaurants;
-  }, [active, memory.dietary]);
+    if (!list.length) list = restaurants;
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((r) =>
+      [r.name, r.cuisine, r.dishName, r.tag, r.ambiance, ...(r.dailyMenu?.map((m) => m.name) ?? [])]
+        .filter(Boolean)
+        .some((s) => String(s).toLowerCase().includes(q))
+    );
+  }, [active, memory.dietary, query]);
 
   return (
     <div className="phone-frame flex flex-col pb-2">
