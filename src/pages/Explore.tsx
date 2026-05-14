@@ -36,15 +36,23 @@ const Explore = () => {
         <p className="text-muted-foreground text-sm mt-1">Curated for your taste and location.</p>
 
         {/* Ask Spoty — top */}
-        <Link to="/chat" className="mt-4 flex items-center gap-3 bg-primary text-primary-foreground rounded-2xl px-4 h-12 shadow-glow press">
+        <Link to="/chat" className="mt-4 flex items-center gap-3 bg-info text-secondary rounded-2xl px-4 h-12 shadow-soft press">
           <MessageSquare size={16} />
           <span className="text-sm font-bold flex-1">Ask Spoty anything</span>
           <Sparkles size={14} />
         </Link>
 
-        <div className="mt-3 flex items-center gap-3 bg-card rounded-2xl px-4 h-11 shadow-soft">
+        <div className="mt-3 flex items-center gap-3 bg-card rounded-2xl px-4 h-11 shadow-soft focus-within:ring-2 focus-within:ring-primary/40">
           <Search size={16} className="text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Try: "quiet place under 30dt"</span>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Try: "quiet place under 30dt"'
+            className="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground text-secondary"
+          />
+          {query && (
+            <button onClick={() => setQuery("")} className="text-xs font-bold text-muted-foreground press">Clear</button>
+          )}
         </div>
       </header>
 
